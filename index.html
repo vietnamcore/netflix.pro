@@ -593,6 +593,8 @@ section { position: relative; padding: 120px 0; }
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.4s ease-out;
+  transform-style: preserve-3d;
 }
 .float-obj {
   position: absolute;
@@ -779,6 +781,18 @@ section { position: relative; padding: 120px 0; }
   box-shadow: 0 30px 60px rgba(0,0,0,0.5), var(--shadow-neon-red);
   border-color: rgba(229,9,20,0.5);
 }
+/* Spotlight theo con trỏ chuột - hiệu ứng riêng cho khối bảng giá */
+.price-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgba(229,9,20,0.16), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.price-card:hover::after { opacity: 1; }
 .price-card.best {
   background: linear-gradient(180deg, rgba(229,9,20,0.14), var(--c-glass));
   border-color: rgba(229,9,20,0.55);
@@ -888,11 +902,13 @@ section { position: relative; padding: 120px 0; }
   gap: 26px;
 }
 .feature-card {
+  position: relative;
   padding: 34px 28px;
   border-radius: var(--radius-md);
   background: var(--c-glass);
   border: 1px solid var(--c-glass-border);
   backdrop-filter: blur(14px);
+  overflow: hidden;
   transition: transform 0.4s var(--ease-smooth), border-color 0.4s, box-shadow 0.4s;
 }
 .feature-card:hover {
@@ -900,6 +916,18 @@ section { position: relative; padding: 120px 0; }
   border-color: rgba(0,240,255,0.4);
   box-shadow: var(--shadow-neon-cyan);
 }
+/* Hiệu ứng ánh sáng quét qua thẻ khi rê chuột - riêng cho khối tính năng */
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -60%;
+  width: 40%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(0,240,255,0.10), transparent);
+  transform: skewX(-18deg);
+  transition: left 0.75s var(--ease-smooth);
+  pointer-events: none;
+}
+.feature-card:hover::before { left: 130%; }
 .feature-icon {
   width: 58px; height: 58px;
   border-radius: 16px;
@@ -910,6 +938,10 @@ section { position: relative; padding: 120px 0; }
   margin-bottom: 22px;
   background: linear-gradient(135deg, rgba(229,9,20,0.25), rgba(0,240,255,0.12));
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+  transition: transform 0.5s var(--ease-smooth);
+}
+.feature-card:hover .feature-icon {
+  transform: rotate(-8deg) scale(1.12);
 }
 .feature-title { font-size: 19px; font-weight: 800; margin-bottom: 10px; color: #fff; }
 .feature-text { font-size: 14.5px; color: var(--c-text-dim); }
@@ -929,8 +961,28 @@ section { position: relative; padding: 120px 0; }
   gap: 50px;
   align-items: center;
 }
-.support-list { display: flex; flex-direction: column; gap: 22px; }
+.support-list { position: relative; display: flex; flex-direction: column; gap: 22px; }
+/* Đường timeline nối các bước - hiệu ứng riêng cho khối hỗ trợ, chạy dần khi cuộn tới */
+.support-list::before {
+  content: '';
+  position: absolute;
+  left: 30px; top: 8px; bottom: 8px;
+  width: 2px;
+  background: rgba(255,255,255,0.08);
+}
+.support-list::after {
+  content: '';
+  position: absolute;
+  left: 30px; top: 8px;
+  width: 2px;
+  height: 0;
+  background: linear-gradient(180deg, var(--c-red), var(--c-neon-pink));
+  box-shadow: var(--shadow-neon-red);
+  transition: height 1.6s var(--ease-smooth);
+}
+.support-list.timeline-active::after { height: calc(100% - 16px); }
 .support-item {
+  position: relative;
   display: flex;
   gap: 18px;
   padding: 22px;
@@ -990,7 +1042,10 @@ section { position: relative; padding: 120px 0; }
   overflow: hidden;
   transition: border-color 0.3s;
 }
-.faq-item.open { border-color: rgba(229,9,20,0.5); }
+.faq-item.open {
+  border-color: rgba(229,9,20,0.5);
+  box-shadow: 0 20px 45px rgba(229,9,20,0.12);
+}
 .faq-question {
   width: 100%;
   padding: 22px 26px;
@@ -1024,7 +1079,11 @@ section { position: relative; padding: 120px 0; }
   padding: 0 26px 24px;
   font-size: 14.5px;
   color: var(--c-text-dim);
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.45s ease 0.05s, transform 0.45s var(--ease-smooth) 0.05s;
 }
+.faq-item.open .faq-answer p { opacity: 1; transform: translateY(0); }
 
 /* =========================================================
    10. CONTACT
@@ -1045,6 +1104,11 @@ section { position: relative; padding: 120px 0; }
   background: var(--c-glass);
   border: 1px solid var(--c-glass-border);
   backdrop-filter: blur(12px);
+  transition: transform 0.35s var(--ease-smooth), border-color 0.35s;
+}
+.contact-chip:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0,240,255,0.35);
 }
 .contact-chip .ico {
   width: 46px; height: 46px;
@@ -1053,7 +1117,9 @@ section { position: relative; padding: 120px 0; }
   display: flex; align-items: center; justify-content: center;
   font-size: 20px;
   flex-shrink: 0;
+  transition: transform 0.4s var(--ease-smooth);
 }
+.contact-chip:hover .ico { transform: scale(1.15) rotate(-6deg); }
 .contact-chip h5 { font-size: 15px; color: #fff; margin-bottom: 3px; }
 .contact-chip p { font-size: 13.5px; color: var(--c-text-dim); }
 
@@ -1066,7 +1132,13 @@ section { position: relative; padding: 120px 0; }
 }
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
 .form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
-.form-group label { font-size: 13px; color: var(--c-text-dim); letter-spacing: 0.5px; }
+.form-group label {
+  font-size: 13px;
+  color: var(--c-text-dim);
+  letter-spacing: 0.5px;
+  transition: color 0.3s, transform 0.3s var(--ease-smooth);
+}
+.form-group:focus-within label { color: var(--c-neon-pink); transform: translateX(3px); }
 .form-group input, .form-group textarea {
   padding: 14px 16px;
   border-radius: 10px;
@@ -1429,7 +1501,7 @@ footer {
         <p class="hero-desc">Trải nghiệm kho phim và series khổng lồ với chất lượng hình ảnh 4K HDR sắc nét, âm thanh sống động, xem trên mọi thiết bị — không quảng cáo, không giới hạn thời gian.</p>
         <div class="hero-actions">
           <a href="#pricing" class="btn btn-primary ripple-el">Mua Ngay</a>
-          <a href="#contact" class="btn-ghost ripple-el">💬 Tư vấn miễn phí</a>
+          <a href="https://zalo.me/0818105658" target="_blank" rel="noopener" class="btn-ghost ripple-el">💬 Nhắn Zalo Ngay</a>
         </div>
         <div class="hero-counters">
           <div class="counter-item">
@@ -1571,15 +1643,15 @@ footer {
         <h2 class="section-title reveal">Luôn Đồng Hành Cùng Bạn</h2>
         <div class="support-item reveal reveal-delay-1">
           <div class="support-num">01</div>
-          <div><h4>Tư vấn chọn gói</h4><p>Được tư vấn gói phù hợp với nhu cầu và ngân sách của bạn.</p></div>
+          <div><h4>Kích hoạt nhanh chóng</h4><p>Tài khoản được bàn giao ngay sau khi xác nhận thanh toán.</p></div>
         </div>
         <div class="support-item reveal reveal-delay-2">
           <div class="support-num">02</div>
-          <div><h4>Kích hoạt nhanh chóng</h4><p>Tài khoản được bàn giao ngay sau khi xác nhận thanh toán.</p></div>
+          <div><h4>Bảo hành trọn gói</h4><p>Hỗ trợ xử lý sự cố và bảo hành trong suốt thời gian sử dụng.</p></div>
         </div>
         <div class="support-item reveal reveal-delay-3">
           <div class="support-num">03</div>
-          <div><h4>Bảo hành trọn gói</h4><p>Hỗ trợ xử lý sự cố và bảo hành trong suốt thời gian sử dụng.</p></div>
+          <div><h4>Thanh toán linh hoạt</h4><p>Chuyển khoản, ví điện tử hoặc tiền mặt — xác nhận nhanh trong vài phút.</p></div>
         </div>
       </div>
       <div class="support-card reveal reveal-delay-2">
@@ -1656,7 +1728,7 @@ footer {
           </div>
           <div class="form-group"><label>Gói quan tâm</label><input type="text" placeholder="Ví dụ: Gói 14 ngày"></div>
           <div class="form-group"><label>Lời nhắn</label><textarea placeholder="Nội dung bạn muốn trao đổi..."></textarea></div>
-          <button type="submit" class="form-submit ripple-el">Gửi Yêu Cầu Tư Vấn</button>
+          <button type="submit" class="form-submit ripple-el">Gửi Yêu Cầu Đặt Mua</button>
         </form>
       </div>
     </div>
@@ -2039,6 +2111,50 @@ footer {
       });
     }, { threshold: 0.3 });
     counterObserver.observe(heroCounterWrap);
+  }
+
+  /* ---------------------------------------------------
+     10b. PARALLAX HERO VISUAL (di chuột để tạo chiều sâu 3D)
+  --------------------------------------------------- */
+  const heroVisual = document.getElementById('hero-visual');
+  if (heroVisual && window.matchMedia('(min-width: 1025px)').matches) {
+    // Nghiêng cả khối theo chuột để tạo chiều sâu 3D thật, không đụng tới animation float sẵn có của từng vật thể
+    heroVisual.addEventListener('mousemove', (e) => {
+      const rect = heroVisual.getBoundingClientRect();
+      const px = (e.clientX - rect.left) / rect.width - 0.5;
+      const py = (e.clientY - rect.top) / rect.height - 0.5;
+      heroVisual.style.transform = `perspective(1000px) rotateY(${px * 10}deg) rotateX(${py * -10}deg)`;
+    });
+    heroVisual.addEventListener('mouseleave', () => {
+      heroVisual.style.transform = '';
+    });
+  }
+
+  /* ---------------------------------------------------
+     10c. SPOTLIGHT THEO CHUỘT CHO PRICING CARD
+  --------------------------------------------------- */
+  document.querySelectorAll('.price-card').forEach((card) => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      card.style.setProperty('--mx', `${e.clientX - rect.left}px`);
+      card.style.setProperty('--my', `${e.clientY - rect.top}px`);
+    });
+  });
+
+  /* ---------------------------------------------------
+     10d. TIMELINE CHẠY DẦN CHO PHẦN SUPPORT
+  --------------------------------------------------- */
+  const supportList = document.querySelector('.support-list');
+  if (supportList) {
+    const timelineObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          supportList.classList.add('timeline-active');
+          timelineObserver.disconnect();
+        }
+      });
+    }, { threshold: 0.25 });
+    timelineObserver.observe(supportList);
   }
 
   /* ---------------------------------------------------
