@@ -260,6 +260,21 @@ section { position: relative; padding: 120px 0; }
   #cursor-glow, #mouse-spotlight, .trail-dot { display: none; }
 }
 
+/* Thanh sáng chạy công nghệ cố định trên cùng trang (giống các trang SaaS/tech hiện đại) */
+.top-glow-bar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  z-index: 300;
+  background: linear-gradient(90deg, transparent, var(--c-neon-cyan), var(--c-red), var(--c-neon-pink), transparent);
+  background-size: 200% 100%;
+  animation: topGlowShift 7s linear infinite;
+  opacity: 0.9;
+}
+@keyframes topGlowShift {
+  to { background-position: -200% 0; }
+}
+
 /* =========================================================
    3. NAVBAR
 ========================================================= */
@@ -409,13 +424,42 @@ section { position: relative; padding: 120px 0; }
   100% { background-position: 0% 0%; }
 }
 
+/* Lưới kỹ thuật số mờ phía sau hero - tạo chiều sâu kiểu trang công nghệ */
+.hero-grid-pattern {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 46px 46px;
+  -webkit-mask-image: radial-gradient(ellipse 65% 55% at 60% 35%, black 15%, transparent 72%);
+  mask-image: radial-gradient(ellipse 65% 55% at 60% 35%, black 15%, transparent 72%);
+}
+
 .hero-grid {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
+  grid-template-areas:
+    "badge   visual"
+    "title   visual"
+    "tags    visual"
+    "desc    visual"
+    "actions visual"
+    "trust   visual"
+    "counters visual";
   gap: 40px;
   align-items: center;
   width: 100%;
 }
+.hero-badge    { grid-area: badge; }
+.hero-title    { grid-area: title; }
+.hero-tags     { grid-area: tags; }
+.hero-desc     { grid-area: desc; }
+.hero-actions  { grid-area: actions; }
+.hero-trust    { grid-area: trust; }
+.hero-counters { grid-area: counters; }
+.hero-visual   { grid-area: visual; }
 
 .hero-badge {
   display: inline-flex;
@@ -510,6 +554,48 @@ section { position: relative; padding: 120px 0; }
 }
 
 .hero-actions { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+
+/* Hàng tin cậy: avatar khách hàng chồng lớp + sao đánh giá */
+.hero-trust {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 30px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: trustFadeIn 0.8s var(--ease-smooth) forwards;
+  animation-delay: 2.4s;
+}
+@keyframes trustFadeIn {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.trust-avatars { display: flex; }
+.trust-avatars .trust-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 2.5px solid var(--c-bg);
+  margin-left: -12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+}
+.trust-avatars .trust-avatar:first-child { margin-left: 0; }
+.trust-avatar.a1 { background: linear-gradient(135deg, var(--c-red), var(--c-neon-pink)); }
+.trust-avatar.a2 { background: linear-gradient(135deg, #ffb800, #ff7a00); }
+.trust-avatar.a3 { background: linear-gradient(135deg, #00c2ff, var(--c-neon-cyan)); }
+.trust-avatar.a4 {
+  background: rgba(255,255,255,0.08);
+  border-color: var(--c-bg);
+  font-size: 12px;
+  letter-spacing: 0;
+}
+.trust-info { display: flex; flex-direction: column; gap: 3px; }
+.trust-stars { color: var(--c-gold); font-size: 15px; letter-spacing: 2px; line-height: 1; }
+.trust-text { font-size: 13.5px; color: var(--c-text-dim); }
+.trust-text b { color: var(--c-text); font-weight: 700; }
 
 /* Nút Shine + Ripple */
 .btn {
@@ -610,6 +696,19 @@ section { position: relative; padding: 120px 0; }
   transition: transform 0.4s ease-out;
   transform-style: preserve-3d;
 }
+/* Quầng sáng "sân khấu" bên dưới cả khối vật thể lơ lửng - neo cảm giác chiều sâu không gian thật */
+.hero-visual::before {
+  content: '';
+  position: absolute;
+  width: 72%;
+  height: 60px;
+  left: 50%;
+  bottom: 2%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse, rgba(229,9,20,0.28), rgba(0,240,255,0.08) 55%, transparent 75%);
+  filter: blur(22px);
+  z-index: -1;
+}
 .float-obj {
   position: absolute;
   border-radius: var(--radius-md);
@@ -645,6 +744,22 @@ section { position: relative; padding: 120px 0; }
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
   text-shadow: var(--shadow-neon-red);
+  z-index: 2;
+}
+/* Vệt phản chiếu kính chéo trên màn hình - tạo cảm giác mặt kính thật, không phẳng nhựa */
+.laptop-screen::after {
+  content: '';
+  position: absolute;
+  top: -40%; left: -60%;
+  width: 60%; height: 220%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,0.16) 45%, transparent 60%);
+  transform: rotate(12deg);
+  animation: screenSheen 5s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes screenSheen {
+  0%, 100% { left: -60%; }
+  50% { left: 120%; }
 }
 .laptop-base {
   position: absolute;
@@ -667,9 +782,11 @@ section { position: relative; padding: 120px 0; }
   top: 12%;
   background: linear-gradient(160deg, #17171b, #000);
   border: 3px solid #26262d;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.55), 0 0 40px rgba(0,240,255,0.2);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.55), 0 0 40px rgba(0,240,255,0.2),
+    inset 1px 1px 1px rgba(255,255,255,0.22), inset -14px 0 24px rgba(0,0,0,0.5);
   animation: floatPhone 7s ease-in-out infinite;
   z-index: 4;
+  overflow: hidden;
 }
 .phone::before {
   content: '';
@@ -694,46 +811,75 @@ section { position: relative; padding: 120px 0; }
   50% { transform: translateY(-26px) rotate(2deg); }
 }
 
+/* Viên kính 3D chứa bắp rang - thay cho emoji phẳng "nhựa", có mặt kính, ánh sáng dội và bóng đổ dưới đất tạo cảm giác lơ lửng thật */
 .popcorn {
-  width: 96px;
-  height: 96px;
+  width: 100px;
+  height: 100px;
   left: 4%;
   bottom: 8%;
   z-index: 4;
+  border-radius: 28px;
+  background: linear-gradient(155deg, rgba(255,255,255,0.16), rgba(255,184,0,0.08) 45%, rgba(10,10,13,0.55));
+  border: 1px solid rgba(255,255,255,0.16);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 24px 40px rgba(0,0,0,0.5), 0 0 34px rgba(255,184,0,0.18),
+    inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -14px 22px rgba(255,184,0,0.14);
   animation: floatPopcorn 5.5s ease-in-out infinite;
-  filter: drop-shadow(0 10px 25px rgba(255,184,0,0.35));
-  font-size: 74px;
+  font-size: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: none;
+}
+.popcorn::before {
+  content: '';
+  position: absolute;
+  top: 10px; left: 14px;
+  width: 32%; height: 22%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.65), transparent 70%);
+  filter: blur(1.5px);
 }
 @keyframes floatPopcorn {
   0%, 100% { transform: translateY(0) rotate(-8deg); }
   50% { transform: translateY(-22px) rotate(6deg); }
 }
 
-/* Tai nghe lơ lửng - chi tiết mới, chuyển động lắc nhẹ theo trục riêng */
+/* Viên kính 3D chứa tai nghe - chi tiết mới, chuyển động lắc nhẹ theo trục riêng */
 .headphone {
-  width: 76px;
-  height: 76px;
+  width: 82px;
+  height: 82px;
   right: 20%;
   bottom: 4%;
   z-index: 3;
-  font-size: 56px;
+  border-radius: 26px;
+  background: linear-gradient(155deg, rgba(255,255,255,0.16), rgba(0,240,255,0.08) 45%, rgba(10,10,13,0.55));
+  border: 1px solid rgba(255,255,255,0.16);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 20px 36px rgba(0,0,0,0.48), 0 0 30px rgba(0,240,255,0.16),
+    inset 0 1px 1px rgba(255,255,255,0.4), inset 0 -14px 20px rgba(0,240,255,0.12);
+  font-size: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: none;
-  filter: drop-shadow(0 12px 22px rgba(0,240,255,0.3));
   animation: floatHeadphone 6.8s ease-in-out infinite;
+}
+.headphone::before {
+  content: '';
+  position: absolute;
+  top: 9px; left: 12px;
+  width: 30%; height: 20%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.6), transparent 70%);
+  filter: blur(1.5px);
 }
 @keyframes floatHeadphone {
   0%, 100% { transform: translateY(0) rotate(6deg); }
   50% { transform: translateY(-18px) rotate(-4deg); }
 }
 
-/* Huy hiệu 4K lơ lửng - chi tiết mới, xoay tròn chậm quanh trục Z kết hợp trôi nổi */
+/* Huy hiệu 4K lơ lửng dạng cầu kính 3D - ánh kim loại + dội sáng thật, xoay tròn chậm kết hợp trôi nổi */
 .badge-4k {
   width: 64px;
   height: 64px;
@@ -741,8 +887,8 @@ section { position: relative; padding: 120px 0; }
   top: 6%;
   z-index: 4;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(229,9,20,0.9), rgba(255,31,74,0.7));
-  box-shadow: 0 12px 30px rgba(229,9,20,0.4), 0 0 0 1px rgba(255,255,255,0.12) inset;
+  background: radial-gradient(circle at 32% 28%, rgba(255,255,255,0.55), rgba(255,80,90,0.65) 35%, rgba(139,6,13,0.95) 78%);
+  box-shadow: 0 14px 32px rgba(229,9,20,0.45), 0 0 0 1px rgba(255,255,255,0.14) inset, inset 0 -10px 16px rgba(0,0,0,0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -750,12 +896,232 @@ section { position: relative; padding: 120px 0; }
   font-size: 17px;
   letter-spacing: 0.5px;
   color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
   animation: floatBadge 8s ease-in-out infinite;
+}
+.badge-4k::before {
+  content: '';
+  position: absolute;
+  top: 6px; left: 10px;
+  width: 34%; height: 24%;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.7);
+  filter: blur(2px);
 }
 @keyframes floatBadge {
   0%, 100% { transform: translate(0, 0) rotate(0deg); }
   33% { transform: translate(10px, -16px) rotate(8deg); }
   66% { transform: translate(-8px, 6px) rotate(-6deg); }
+}
+
+/* Bóng đổ tiếp đất mờ dưới mỗi vật thể lơ lửng - đánh lừa thị giác rằng vật đang trôi nổi thật trong không gian */
+.popcorn::after,
+.headphone::after,
+.badge-4k::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  transform: translateX(-50%);
+  width: 62%;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.55), transparent 72%);
+  filter: blur(4px);
+  z-index: -1;
+}
+
+/* Badge "đang xem trực tiếp" - social proof lơ lửng, tạo cảm giác khan hàng */
+.live-badge {
+  position: absolute;
+  top: 4%;
+  right: 2%;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 10px 16px;
+  border-radius: 30px;
+  background: var(--c-glass);
+  border: 1px solid var(--c-glass-border);
+  backdrop-filter: blur(14px);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--c-text);
+  white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  animation: floatBadgeSlow 7.5s ease-in-out infinite;
+}
+.live-badge .live-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #ff2e46;
+  box-shadow: 0 0 10px #ff2e46;
+  animation: dotBlink 1.4s infinite;
+  flex-shrink: 0;
+}
+@keyframes floatBadgeSlow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+
+/* Thẻ poster phim thu nhỏ lơ lửng - tăng chiều sâu, gợi cảm giác "kho phim khổng lồ" */
+.poster-card {
+  width: 104px;
+  height: 142px;
+  border-radius: 12px;
+  overflow: visible;
+  position: relative;
+  border: 1px solid var(--c-glass-border);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+}
+/* Vệt sáng kính chạy chéo qua poster + bóng đổ tiếp đất bên dưới - tăng cảm giác chiều sâu thật */
+.poster-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(115deg, rgba(255,255,255,0.22) 0%, transparent 24%, transparent 76%, rgba(255,255,255,0.08) 100%);
+  z-index: 2;
+  pointer-events: none;
+}
+.poster-card::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -16px;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.5), transparent 72%);
+  filter: blur(4px);
+  z-index: -1;
+}
+.poster-card .poster-fill {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 10px;
+}
+.poster-card .poster-rating {
+  position: absolute;
+  top: 8px; right: 8px;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  border-radius: 20px;
+  padding: 3px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--c-gold);
+}
+.poster-card .poster-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.8);
+}
+.poster-1 {
+  left: -4%;
+  top: 16%;
+  z-index: 5;
+  animation: floatPoster1 6.4s ease-in-out infinite;
+}
+.poster-1 .poster-fill { background: linear-gradient(160deg, #3a0a10, #14040a); }
+.poster-2 {
+  right: -1%;
+  bottom: 14%;
+  z-index: 5;
+  animation: floatPoster2 7.2s ease-in-out infinite;
+}
+.poster-2 .poster-fill { background: linear-gradient(160deg, #062a33, #030f13); }
+@keyframes floatPoster1 {
+  0%, 100% { transform: translateY(0) rotate(-6deg); }
+  50% { transform: translateY(-20px) rotate(-2deg); }
+}
+@keyframes floatPoster2 {
+  0%, 100% { transform: translateY(0) rotate(5deg); }
+  50% { transform: translateY(-16px) rotate(9deg); }
+}
+
+/* Chip kính lơ lửng "Dolby Atmos" - chi tiết mới lấp khoảng trống bên trái, tăng cảm giác sản phẩm công nghệ cao cấp */
+.audio-chip {
+  left: -3%;
+  top: 46%;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 30px;
+  background: linear-gradient(155deg, rgba(255,255,255,0.14), rgba(0,240,255,0.06));
+  border: 1px solid rgba(255,255,255,0.16);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 18px 34px rgba(0,0,0,0.45), inset 0 1px 1px rgba(255,255,255,0.32);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  animation: floatChip 6.2s ease-in-out infinite;
+}
+.audio-chip .chip-icon {
+  font-size: 16px;
+  filter: drop-shadow(0 4px 8px rgba(0,240,255,0.45));
+}
+@keyframes floatChip {
+  0%, 100% { transform: translateY(0) rotate(-3deg); }
+  50% { transform: translateY(-16px) rotate(2deg); }
+}
+
+/* Con trỏ cuộn xuống ở cuối hero */
+.scroll-cue {
+  position: absolute;
+  bottom: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--c-text-dim);
+  font-size: 11.5px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  z-index: 2;
+  opacity: 0;
+  animation: trustFadeIn 0.8s var(--ease-smooth) forwards;
+  animation-delay: 2.8s;
+}
+.scroll-cue .mouse {
+  width: 24px; height: 38px;
+  border-radius: 14px;
+  border: 2px solid rgba(255,255,255,0.25);
+  position: relative;
+}
+.scroll-cue .mouse::before {
+  content: '';
+  position: absolute;
+  top: 6px; left: 50%;
+  transform: translateX(-50%);
+  width: 4px; height: 8px;
+  border-radius: 3px;
+  background: var(--c-neon-cyan);
+  box-shadow: var(--shadow-neon-cyan);
+  animation: scrollWheel 1.8s ease-in-out infinite;
+}
+@keyframes scrollWheel {
+  0% { opacity: 1; transform: translate(-50%, 0); }
+  70% { opacity: 0; transform: translate(-50%, 14px); }
+  100% { opacity: 0; transform: translate(-50%, 14px); }
+}
+@media (max-width: 1024px) {
+  .scroll-cue { display: none; }
 }
 
 .hero-ring {
@@ -776,8 +1142,20 @@ section { position: relative; padding: 120px 0; }
 @keyframes spinRing { to { transform: translate(-50%, -50%) rotate(360deg); } }
 
 @media (max-width: 1024px) {
-  .hero-grid { grid-template-columns: 1fr; }
-  .hero-visual { height: 380px; margin-top: 20px; }
+  .hero-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "badge"
+      "title"
+      "visual"
+      "tags"
+      "desc"
+      "actions"
+      "trust"
+      "counters";
+    row-gap: 8px;
+  }
+  .hero-visual { height: 420px; margin: 18px 0 6px; }
   .laptop { width: 260px; height: 170px; }
   .phone { width: 84px; height: 170px; right: 8%; }
   .popcorn { font-size: 56px; width: 70px; height: 70px; }
@@ -785,6 +1163,33 @@ section { position: relative; padding: 120px 0; }
   .badge-4k { width: 50px; height: 50px; font-size: 13px; }
   .hero-ring { width: 320px; height: 320px; }
   .hero-ring.ring2 { width: 400px; height: 400px; }
+}
+
+/* Sắp xếp riêng cho màn hình điện thoại: gọn lại, không chồng lấn, nhưng vẫn đủ "vật phẩm lơ lửng" để nổi bật */
+@media (max-width: 600px) {
+  .hero-visual { height: 400px; margin: 14px 0 4px; }
+  .hero-ring { width: 250px; height: 250px; }
+  .hero-ring.ring2 { width: 300px; height: 300px; }
+
+  .laptop { width: 188px; height: 122px; top: 50%; z-index: 3; }
+  .laptop-screen::before { font-size: 30px; }
+
+  .phone { width: 58px; height: 118px; right: 4%; top: 6%; }
+  .phone::after { font-size: 14px; }
+
+  .popcorn { width: 52px; height: 52px; font-size: 30px; left: 2%; bottom: 14%; border-radius: 20px; }
+  .headphone { width: 46px; height: 46px; font-size: 26px; right: 12%; bottom: 0; border-radius: 18px; }
+  .badge-4k { width: 40px; height: 40px; font-size: 10.5px; left: 12%; top: 0; }
+
+  .poster-card { width: 72px; height: 98px; }
+  .poster-1 { left: -3%; top: 18%; }
+  .poster-2 { right: -3%; bottom: 20%; }
+  .poster-card .poster-rating { font-size: 9px; padding: 2px 6px; }
+  .poster-card .poster-label { font-size: 9px; }
+
+  .live-badge { top: 0; right: 0; font-size: 10px; padding: 7px 12px; gap: 6px; }
+  .audio-chip { left: -2%; top: 54%; font-size: 10px; padding: 7px 12px; }
+  .audio-chip .chip-icon { font-size: 13px; }
 }
 
 /* =========================================================
@@ -1313,6 +1718,9 @@ footer {
 </head>
 <body>
 
+<!-- Thanh sáng công nghệ cố định trên cùng trang -->
+<div class="top-glow-bar"></div>
+
 <!-- ============ LOADING SCREEN ============ -->
 <div id="loading-screen">
   <div class="loader-logo">NETFLIX <span style="color:#fff;">PREMIUM</span></div>
@@ -1345,40 +1753,64 @@ footer {
   <!-- ============ HERO ============ -->
   <section id="hero">
     <div class="hero-bg-gradient"></div>
+    <div class="hero-grid-pattern"></div>
     <div class="container hero-grid">
-      <div class="hero-left">
-        <div class="hero-badge"><span class="dot"></span> Tài khoản chính chủ · Bảo hành trọn gói</div>
-        <h1 class="hero-title">
-          <span id="typed-text"></span><span id="typed-cursor">&nbsp;</span>
-        </h1>
-        <div class="hero-tags">
-          <div class="hero-tag"><span class="ico">🎬</span> Giải trí đỉnh cao</div>
-          <div class="hero-tag"><span class="ico">♾️</span> Không giới hạn</div>
-          <div class="hero-tag"><span class="ico">📺</span> 4K HDR</div>
+      <div class="hero-badge"><span class="dot"></span> Tài khoản chính chủ · Bảo hành trọn gói</div>
+      <h1 class="hero-title">
+        <span id="typed-text"></span><span id="typed-cursor">&nbsp;</span>
+      </h1>
+      <div class="hero-tags">
+        <div class="hero-tag"><span class="ico">🎬</span> Giải trí đỉnh cao</div>
+        <div class="hero-tag"><span class="ico">♾️</span> Không giới hạn</div>
+        <div class="hero-tag"><span class="ico">📺</span> 4K HDR</div>
+      </div>
+      <p class="hero-desc">Trải nghiệm kho phim và series khổng lồ với chất lượng hình ảnh 4K HDR sắc nét, âm thanh sống động, xem trên mọi thiết bị — không quảng cáo, không giới hạn thời gian.</p>
+      <div class="hero-actions">
+        <a href="#pricing" class="btn btn-primary ripple-el">Mua Ngay</a>
+        <a href="https://zalo.me/0818105658" target="_blank" rel="noopener" class="btn-ghost ripple-el">💬 Nhắn Zalo Ngay</a>
+      </div>
+      <div class="hero-trust">
+        <div class="trust-avatars">
+          <div class="trust-avatar a1">M</div>
+          <div class="trust-avatar a2">H</div>
+          <div class="trust-avatar a3">T</div>
+          <div class="trust-avatar a4">99+</div>
         </div>
-        <p class="hero-desc">Trải nghiệm kho phim và series khổng lồ với chất lượng hình ảnh 4K HDR sắc nét, âm thanh sống động, xem trên mọi thiết bị — không quảng cáo, không giới hạn thời gian.</p>
-        <div class="hero-actions">
-          <a href="#pricing" class="btn btn-primary ripple-el">Mua Ngay</a>
-          <a href="https://zalo.me/0818105658" target="_blank" rel="noopener" class="btn-ghost ripple-el">💬 Nhắn Zalo Ngay</a>
+        <div class="trust-info">
+          <div class="trust-stars">★★★★★</div>
+          <div class="trust-text"><b>4.9/5</b> từ hơn 12.000 khách hàng đã trải nghiệm</div>
         </div>
-        <div class="hero-counters">
-          <div class="counter-item">
-            <div class="counter-num"><span class="counter" data-target="12000">0</span>+</div>
-            <div class="counter-label">Khách hàng</div>
-          </div>
-          <div class="counter-item">
-            <div class="counter-num"><span class="counter" data-target="4">0</span>K</div>
-            <div class="counter-label">Độ phân giải</div>
-          </div>
-          <div class="counter-item">
-            <div class="counter-num"><span class="counter" data-target="99">0</span>%</div>
-            <div class="counter-label">Hài lòng</div>
-          </div>
+      </div>
+      <div class="hero-counters">
+        <div class="counter-item">
+          <div class="counter-num"><span class="counter" data-target="12000">0</span>+</div>
+          <div class="counter-label">Khách hàng</div>
+        </div>
+        <div class="counter-item">
+          <div class="counter-num"><span class="counter" data-target="4">0</span>K</div>
+          <div class="counter-label">Độ phân giải</div>
+        </div>
+        <div class="counter-item">
+          <div class="counter-num"><span class="counter" data-target="99">0</span>%</div>
+          <div class="counter-label">Hài lòng</div>
         </div>
       </div>
       <div class="hero-visual" id="hero-visual">
         <div class="hero-ring"></div>
         <div class="hero-ring ring2"></div>
+        <div class="live-badge"><span class="live-dot"></span> 1.284 người đang xem</div>
+        <div class="float-obj poster-card poster-1">
+          <div class="poster-rating">★ 9.2</div>
+          <div class="poster-fill">
+            <div class="poster-label">Hành Trình Vũ Trụ</div>
+          </div>
+        </div>
+        <div class="float-obj poster-card poster-2">
+          <div class="poster-rating">★ 8.8</div>
+          <div class="poster-fill">
+            <div class="poster-label">Bí Ẩn Đại Dương</div>
+          </div>
+        </div>
         <div class="float-obj laptop">
           <div class="laptop-screen"></div>
           <div class="laptop-base"></div>
@@ -1387,8 +1819,10 @@ footer {
         <div class="float-obj popcorn">🍿</div>
         <div class="float-obj headphone">🎧</div>
         <div class="float-obj badge-4k">4K</div>
+        <div class="float-obj audio-chip"><span class="chip-icon">🔊</span> Dolby Atmos</div>
       </div>
     </div>
+    <div class="scroll-cue"><span class="mouse"></span> Cuộn xuống</div>
   </section>
 
   <!-- ============ PRICING ============ -->
@@ -1417,10 +1851,9 @@ footer {
           </div>
         </div>
 
-        <div class="price-card best tilt-card reveal reveal-delay-2" data-name="Gói 14 Ngày" data-price="25.000đ" tabindex="0">
-          <div class="best-badge">Bán chạy</div>
+        <div class="price-card tilt-card reveal reveal-delay-2" data-name="Gói 14 Ngày" data-price="25.000đ" tabindex="0">
           <div class="price-card-inner">
-            <div class="plan-name">Phổ biến nhất</div>
+            <div class="plan-name">Trải nghiệm sâu</div>
             <div class="plan-duration">14 Ngày</div>
             <div class="plan-price"><span class="num">25.000</span><span class="unit">đ / 14 ngày</span></div>
             <ul class="plan-features">
@@ -1434,9 +1867,10 @@ footer {
           </div>
         </div>
 
-        <div class="price-card tilt-card reveal reveal-delay-3" data-name="Gói 30 Ngày" data-price="30.000đ" tabindex="0">
+        <div class="price-card best tilt-card reveal reveal-delay-3" data-name="Gói 30 Ngày" data-price="30.000đ" tabindex="0">
+          <div class="best-badge">🔥 Bán chạy</div>
           <div class="price-card-inner">
-            <div class="plan-name">Tiết kiệm nhất</div>
+            <div class="plan-name">Phổ biến nhất</div>
             <div class="plan-duration">30 Ngày</div>
             <div class="plan-price"><span class="num">30.000</span><span class="unit">đ / 30 ngày</span></div>
             <ul class="plan-features">
@@ -1444,7 +1878,7 @@ footer {
               <li><span class="check">✓</span> Dùng trên TV, điện thoại, laptop</li>
               <li><span class="check">✓</span> Bảo hành toàn thời gian gói</li>
               <li><span class="check">✓</span> Hỗ trợ nhanh qua Zalo</li>
-              <li><span class="check">✓</span> Dùng trọn tháng, giá tốt nhất</li>
+              <li><span class="check">✓</span> Dùng trọn tháng, giá tốt nhất, tối ưu chi phí nhất</li>
             </ul>
             <button class="plan-btn ripple-el">Chọn Gói Này</button>
           </div>
