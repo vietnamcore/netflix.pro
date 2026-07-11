@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>NETFLIX PREMIUM — Giải Trí Đỉnh Cao 4K HDR Không Giới Hạn</title>
+<meta name="description" content="Netflix Premium giá rẻ, tài khoản chính chủ, xem 4K HDR không giới hạn. Liên hệ Zalo 0818105658.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================
+   0. RESET & TOKENS — strict black / red / white, no gradients-for-gradients-sake
+========================================================= */
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+:root{
+  --black:#050506;
+  --black2:#0b0b0d;
+  --panel:#0f0f12;
+  --red:#e50914;
+  --red-hot:#ff2036;
+  --red-deep:#4a040a;
+  --white:#f5f3ef;
+  --gray:#8b8b91;
+  --line: rgba(255,255,255,.09);
+  --font-d:'Anton', sans-serif;
+  --font-b:'Inter', sans-serif;
+  --font-m:'Space Mono', monospace;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --glow-red: 0 0 18px rgba(229,9,20,.55), 0 0 46px rgba(229,9,20,.25);
+}
+
+html{ scroll-behavior:smooth; background:var(--black); }
+body{ font-family:var(--font-b); background:var(--black); color:var(--white); overflow-x:hidden; line-height:1.6; }
+::selection{ background:var(--red); color:#fff; }
+::-webkit-scrollbar{ width:8px; }
+::-webkit-scrollbar-track{ background:#000; }
+::-webkit-scrollbar-thumb{ background:var(--red); border-radius:10px; }
+a{ text-decoration:none; color:inherit; }
+ul{ list-style:none; }
+button{ font-family:inherit; cursor:pointer; border:none; outline:none; background:none; }
+img{ max-width:100%; display:block; }
+
+.container{ width:100%; max-width:1240px; margin:0 auto; padding:0 24px; position:relative; z-index:2; }
+
+section{ position:relative; padding:96px 0; overflow:visible; scroll-margin-top:84px; }
+section + section{ margin-top:-1px; }
+
+/* shared type system */
+.eyebrow{ display:inline-flex; align-items:center; gap:10px; font-family:var(--font-m); font-size:11.5px; letter-spacing:4px; font-weight:700; color:var(--red-hot); text-transform:uppercase; margin-bottom:18px; }
+.eyebrow::before{ content:''; width:26px; height:1px; background:var(--red); }
+.title{ font-family:var(--font-d); font-size:clamp(32px,5vw,58px); letter-spacing:.5px; line-height:1.02; margin-bottom:18px; text-transform:uppercase; color:var(--white); }
+.title i{ font-style:normal; color:var(--red); text-shadow:var(--glow-red); }
+.desc{ color:var(--gray); font-size:16px; max-width:560px; margin-bottom:0; }
+.head{ text-align:center; margin:0 auto 56px; max-width:680px; display:flex; flex-direction:column; align-items:center; }
+
+.reveal{ opacity:0; transform:translateY(36px); transition:opacity .9s var(--ease), transform .9s var(--ease); }
+.reveal.in-view{ opacity:1; transform:translateY(0); }
+.reveal-d1.in-view{ transition-delay:.08s; } .reveal-d2.in-view{ transition-delay:.18s; }
+.reveal-d3.in-view{ transition-delay:.28s; } .reveal-d4.in-view{ transition-delay:.38s; }
+
+/* =========================================================
+   1. LOADING SCREEN
+========================================================= */
+#loading-screen{ position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; pointer-events:auto; }
+.loader-curtain{ position:absolute; top:0; bottom:0; width:50%; background:linear-gradient(160deg,#0a0a0c,#000); z-index:1; transition:transform 1.15s cubic-bezier(.76,0,.24,1); box-shadow:0 0 80px rgba(229,9,20,.08) inset; }
+.loader-curtain.l{ left:0; }
+.loader-curtain.r{ right:0; }
+#loading-screen.hidden .loader-curtain.l{ transform:translateX(-100%); }
+#loading-screen.hidden .loader-curtain.r{ transform:translateX(100%); }
+.loader-content{ position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:26px; transition:opacity .5s ease, transform .7s var(--ease); }
+#loading-screen.hidden .loader-content{ opacity:0; transform:scale(1.08); }
+.loader-logo{ font-family:var(--font-d); font-size:clamp(30px,6vw,50px); letter-spacing:5px; color:var(--red); text-shadow:var(--glow-red); animation:loaderPulse 1.3s ease-in-out infinite; }
+@keyframes loaderPulse{ 0%,100%{ opacity:1; transform:scale(1);} 50%{ opacity:.6; transform:scale(.97);} }
+.loader-bar-track{ width:220px; height:2px; background:rgba(255,255,255,.1); position:relative; overflow:hidden; }
+.loader-bar-fill{ height:100%; width:0%; background:var(--red); box-shadow:0 0 12px var(--red); transition:width .25s ease-out; }
+.loader-percent{ font-family:var(--font-m); font-size:12px; letter-spacing:3px; color:var(--gray); font-variant-numeric:tabular-nums; }
+
+/* =========================================================
+   2. AMBIENT LAYERS
+========================================================= */
+#noise-overlay{ position:fixed; inset:0; z-index:2; pointer-events:none; opacity:.035; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-repeat:repeat; }
+#particle-canvas{ position:fixed; inset:0; z-index:0; pointer-events:none; }
+#cursor-glow{ position:fixed; width:440px; height:440px; border-radius:50%; pointer-events:none; z-index:1; background:radial-gradient(circle, rgba(229,9,20,.15) 0%, rgba(229,9,20,.04) 40%, transparent 70%); transform:translate(-50%,-50%); transition:opacity .3s ease; will-change:left,top; }
+#ambient-wash{ position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 45% at 50% 0%, rgba(229,9,20,.05), transparent 70%),
+    radial-gradient(ellipse 60% 45% at 50% 100%, rgba(229,9,20,.05), transparent 70%); }
+.trail-dot{ position:fixed; width:5px; height:5px; border-radius:50%; background:var(--red); box-shadow:0 0 8px var(--red); pointer-events:none; z-index:4; transform:translate(-50%,-50%); animation:trailFade .6s forwards ease-out; }
+@keyframes trailFade{ 0%{ opacity:.8; transform:translate(-50%,-50%) scale(1);} 100%{ opacity:0; transform:translate(-50%,-50%) scale(.2);} }
+#cursor-ring{ position:fixed; width:32px; height:32px; border:1px solid rgba(229,9,20,.55); border-radius:50%; pointer-events:none; z-index:250; transform:translate(-50%,-50%); transition:width .28s var(--ease), height .28s var(--ease), border-color .28s, background .28s, opacity .3s; }
+#cursor-ring.hover{ width:58px; height:58px; background:rgba(229,9,20,.08); border-color:var(--red-hot); }
+#scene-tint{ position:fixed; inset:0; z-index:1; pointer-events:none; mix-blend-mode:soft-light; opacity:.55; transition:background 1.6s ease; background:radial-gradient(ellipse 80% 55% at 50% 25%, rgba(229,9,20,.14), transparent 70%); }
+.page-content{ position:relative; z-index:5; transform-origin:50% 0; will-change:transform; }
+@media (max-width:768px){ #cursor-glow, .trail-dot, #cursor-ring{ display:none; } }
+
+.reel{ position:fixed; top:0; bottom:0; left:32px; width:1px; z-index:150; background:linear-gradient(180deg, transparent, var(--line) 8%, var(--line) 92%, transparent); pointer-events:none; }
+.reel-fill{ position:absolute; top:0; left:-1px; width:3px; background:var(--red); box-shadow:0 0 12px var(--red); height:0%; transition:height .1s linear; }
+@media (max-width:900px){ .reel{ display:none; } }
+
+#vignette{ position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.7; animation:vignetteBreathe 7s ease-in-out infinite;
+  background:radial-gradient(ellipse 130% 100% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%); }
+@keyframes vignetteBreathe{ 0%,100%{ opacity:.6;} 50%{ opacity:.8;} }
+
+#dot-nav{ position:fixed; right:26px; top:50%; transform:translateY(-50%); z-index:200; display:flex; flex-direction:column; gap:16px; }
+#dot-nav a{ width:9px; height:9px; border-radius:50%; border:1px solid var(--line); background:rgba(255,255,255,.06); backdrop-filter:blur(6px); position:relative; transition:border-color .3s, background .3s, transform .45s var(--spring); }
+#dot-nav a::after{ content:attr(data-label); position:absolute; right:20px; top:50%; transform:translateY(-50%) translateX(6px); font-family:var(--font-m); font-size:10.5px; letter-spacing:1.5px; color:var(--gray); white-space:nowrap; opacity:0; transition:opacity .3s, transform .3s var(--ease); pointer-events:none; text-transform:uppercase; }
+#dot-nav a:hover::after{ opacity:1; transform:translateY(-50%) translateX(0); }
+#dot-nav a:hover{ transform:scale(1.3); border-color:rgba(229,9,20,.6); }
+#dot-nav a.active{ background:var(--red); border-color:var(--red); box-shadow:0 0 10px var(--red); transform:scale(1.25); }
+@media (max-width:900px){ #dot-nav{ display:none; } }
+
+/* =========================================================
+   2c. LIQUID GLASS — Apple-style dynamic glass material (iOS 26/27)
+   Real refraction feel: layered blur, specular highlight that
+   follows the pointer (via --mx/--my), a hairline rim-light and
+   a soft chromatic edge. Spring easing gives every press/hover
+   the bouncy, fluid response of the newest iOS material.
+========================================================= */
+:root{
+  --spring: cubic-bezier(.34,1.56,.64,1);
+  --spring-soft: cubic-bezier(.22,1,.36,1);
+  --glass-tint: rgba(18,14,15,.42);
+  --glass-edge: rgba(255,255,255,.16);
+  --glass-edge-red: rgba(255,80,90,.35);
+}
+
+.glass{
+  position:relative;
+  background:
+    radial-gradient(120% 140% at 15% 0%, rgba(255,255,255,.09), transparent 55%),
+    linear-gradient(160deg, rgba(255,255,255,.05), rgba(6,6,7,.55));
+  backdrop-filter:blur(22px) saturate(180%);
+  -webkit-backdrop-filter:blur(22px) saturate(180%);
+  border:1px solid var(--glass-edge);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    inset 0 -1px 0 rgba(0,0,0,.3),
+    0 1px 0 rgba(255,255,255,.05);
+}
+/* specular highlight that glides with the cursor, like light bending through glass */
+.glass::before{
+  content:''; position:absolute; inset:0; z-index:1; pointer-events:none; border-radius:inherit;
+  opacity:0; transition:opacity .5s var(--spring-soft);
+  background:radial-gradient(220px circle at var(--mx,50%) var(--my,20%), rgba(255,255,255,.22), rgba(229,9,20,.06) 45%, transparent 72%);
+}
+.glass:hover::before{ opacity:1; }
+/* thin iridescent rim on the top edge — the signature liquid-glass "meniscus" */
+.glass-rim{ position:absolute; left:8%; right:8%; top:0; height:1px; z-index:2; pointer-events:none;
+  background:linear-gradient(90deg, transparent, var(--glass-edge-red) 30%, rgba(255,255,255,.5) 50%, var(--glass-edge-red) 70%, transparent); opacity:.55; }
+
+.spring{ transition:transform .55s var(--spring), box-shadow .4s var(--spring-soft), border-color .4s; }
+.spring:active{ transform:scale(.955); transition:transform .18s var(--spring); }
+
+/* floating liquid blobs — soft morphing metaball shapes used as ambient decor */
+.liquid-blob{ position:absolute; border-radius:42% 58% 65% 35% / 45% 40% 60% 55%; filter:blur(2px); animation:blobMorph 9s ease-in-out infinite; pointer-events:none; }
+@keyframes blobMorph{
+  0%,100%{ border-radius:42% 58% 65% 35% / 45% 40% 60% 55%; transform:rotate(0deg) scale(1); }
+  33%{ border-radius:62% 38% 45% 55% / 55% 62% 38% 45%; transform:rotate(8deg) scale(1.05); }
+  66%{ border-radius:38% 62% 55% 45% / 40% 45% 55% 60%; transform:rotate(-6deg) scale(.97); }
+}
+
+/* Dynamic Island — pill that fluidly morphs to reveal detail, like the iOS status capsule */
+.dyn-island{ display:inline-flex; align-items:center; gap:8px; border-radius:999px; cursor:default;
+  transition:all .6s var(--spring); }
+.dyn-island .dyn-more{ max-width:0; opacity:0; overflow:hidden; white-space:nowrap; transition:max-width .5s var(--spring-soft), opacity .35s ease, margin .5s var(--spring-soft); }
+.dyn-island:hover{ transform:scale(1.04); }
+.dyn-island:hover .dyn-more{ max-width:220px; opacity:1; margin-left:2px; }
+
+@media (max-width:900px){ .dyn-island:hover .dyn-more{ max-width:0; opacity:0; margin-left:0; } }
+
+/* =========================================================
+   2d. ANGULAR GAMING ACCENTS — inspired by diagonal-cut gaming
+   hardware branding: notched corners, circuit-trace linework,
+   sharp diagonal seams between scenes.
+========================================================= */
+.corner-cut{ position:relative; }
+.corner-cut::after{ content:''; position:absolute; top:-1px; right:-1px; width:30px; height:30px; z-index:5; pointer-events:none; background:var(--black); clip-path:polygon(100% 0, 100% 100%, 0 0); }
+.corner-cut::before{ content:''; position:absolute; top:0; right:0; width:32px; height:1.5px; background:var(--red-hot); transform:rotate(-45deg) translate(6px,-3px); transform-origin:top right; opacity:.95; z-index:6; box-shadow:0 0 8px var(--red-hot); }
+.corner-cut-sm{ position:relative; }
+.corner-cut-sm::after{ content:''; position:absolute; top:-1px; right:-1px; width:14px; height:14px; z-index:5; pointer-events:none; background:var(--black); clip-path:polygon(100% 0, 100% 100%, 0 0); }
+.corner-cut-sm::before{ content:''; position:absolute; top:0; right:0; width:15px; height:1px; background:var(--red-hot); transform:rotate(-45deg) translate(3px,-1px); transform-origin:top right; opacity:.9; z-index:6; }
+
+/* diagonal seam divider — sharp black/white/red cut used to break between scenes */
+.diagonal-seam{ position:absolute; left:0; right:0; bottom:-1px; height:110px; z-index:3; pointer-events:none; overflow:hidden; }
+.diagonal-seam svg{ width:100%; height:100%; display:block; }
+.diagonal-seam .seam-line{ stroke:var(--red-hot); stroke-width:1.4; filter:drop-shadow(0 0 6px rgba(229,9,20,.8)); }
+.diagonal-seam .seam-fill{ fill:var(--black); }
+
+/* circuit-trace decorative linework — abstract PCB / mech linework, not any brand's artwork */
+.circuit-art{ position:absolute; pointer-events:none; opacity:.5; mix-blend-mode:screen; }
+.circuit-art path{ stroke:var(--red); stroke-width:1; fill:none; opacity:.55; }
+.circuit-art circle{ fill:var(--red-hot); }
+.circuit-art .trace-glow{ stroke:var(--red-hot); stroke-width:1.6; opacity:0; stroke-dasharray:6 500; animation:traceRun 5.5s linear infinite; filter:drop-shadow(0 0 4px var(--red-hot)); }
+@keyframes traceRun{ 0%{ opacity:0; stroke-dashoffset:0; } 4%{ opacity:1; } 92%{ opacity:1; } 100%{ opacity:0; stroke-dashoffset:-460; } }
+
+/* =========================================================
+   3. NAVBAR
+========================================================= */
+#navbar{ position:fixed; top:0; left:0; right:0; z-index:200; padding:26px 0; transition:all .4s var(--ease); }
+#navbar.scrolled{ padding:14px 0; background:linear-gradient(180deg, rgba(10,10,11,.72), rgba(6,6,7,.82)); backdrop-filter:blur(24px) saturate(180%); -webkit-backdrop-filter:blur(24px) saturate(180%); border-bottom:1px solid var(--glass-edge); box-shadow:inset 0 -1px 0 rgba(0,0,0,.4), 0 20px 50px rgba(0,0,0,.35); transition:padding .5s var(--spring-soft), background .4s, box-shadow .4s; }
+#navbar.scrolled::after{ content:''; position:absolute; left:6%; right:6%; bottom:0; height:1px; background:linear-gradient(90deg, transparent, var(--glass-edge-red), rgba(255,255,255,.4), var(--glass-edge-red), transparent); opacity:.5; }
+.nav-inner{ display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.nav-logo{ font-family:var(--font-d); font-size:22px; letter-spacing:1.5px; color:#fff; display:flex; align-items:center; gap:6px; }
+.nav-logo span{ color:var(--red); text-shadow:var(--glow-red); }
+.nav-links{ display:flex; gap:6px; align-items:center; }
+.nav-links a:not(.nav-cta){ font-size:14px; font-weight:600; color:var(--gray); position:relative; padding:10px 16px; transition:color .3s; }
+.nav-links a:not(.nav-cta)::after{ content:''; position:absolute; left:16px; bottom:6px; width:0%; height:1px; background:var(--red); transition:width .3s var(--ease); }
+.nav-links a:not(.nav-cta):hover{ color:#fff; }
+.nav-links a:not(.nav-cta):hover::after{ width:calc(100% - 32px); }
+.nav-cta{ margin-left:12px; padding:12px 26px; border-radius:999px; background:var(--red); color:#fff; font-weight:700; font-size:13.5px; letter-spacing:.5px; box-shadow:var(--glow-red); transition:transform .4s var(--spring), box-shadow .3s; position:relative; overflow:hidden; }
+.nav-cta:hover{ transform:translateY(-2px); box-shadow:0 0 26px rgba(229,9,20,.85); }
+.nav-cta:active{ transform:scale(.94); transition:transform .18s var(--spring); }
+.nav-toggle{ display:none; width:32px; height:24px; position:relative; z-index:210; }
+.nav-toggle span{ position:absolute; left:0; right:0; height:2px; background:#fff; transition:all .35s var(--ease); }
+.nav-toggle span:nth-child(1){ top:0; } .nav-toggle span:nth-child(2){ top:11px; } .nav-toggle span:nth-child(3){ top:22px; }
+.nav-toggle.active span:nth-child(1){ transform:translateY(11px) rotate(45deg); }
+.nav-toggle.active span:nth-child(2){ opacity:0; }
+.nav-toggle.active span:nth-child(3){ transform:translateY(-11px) rotate(-45deg); }
+@media (max-width:900px){
+  .nav-toggle{ display:block; }
+  .nav-links{ position:fixed; top:0; right:0; height:100vh; width:min(78vw,320px); background:rgba(6,6,7,.96); backdrop-filter:blur(20px); flex-direction:column; justify-content:center; align-items:flex-start; gap:8px; padding:0 40px; transform:translateX(100%); transition:transform .45s var(--ease); border-left:1px solid var(--line); }
+  .nav-links.active{ transform:translateX(0); }
+  .nav-links a{ font-size:19px; }
+  .nav-cta{ margin-top:14px; margin-left:0; }
+}
+
+/* =========================================================
+   4. HERO — cinematic sound-stage: single spotlight, laptop as lead actor
+========================================================= */
+#hero{ min-height:100vh; display:flex; align-items:center; padding-top:110px; padding-bottom:40px; border-top:none; }
+.hero-stage{ position:absolute; inset:0; z-index:-3; background:
+    radial-gradient(ellipse 55% 60% at 72% 40%, rgba(229,9,20,.16), transparent 62%),
+    radial-gradient(ellipse 40% 50% at 15% 85%, rgba(229,9,20,.09), transparent 65%),
+    linear-gradient(180deg, #030304 0%, #08080a 55%, #0c0405 100%);
+}
+.hero-beam{ position:absolute; z-index:-2; top:-10%; right:12%; width:520px; height:130%; background:linear-gradient(180deg, rgba(229,9,20,.16), transparent 70%); filter:blur(60px); transform:rotate(14deg); opacity:.8; }
+.hero-floor{ position:absolute; left:0; right:0; bottom:-14%; height:52%; z-index:-2;
+  background:linear-gradient(0deg, rgba(229,9,20,.07), transparent);
+  -webkit-mask-image:linear-gradient(0deg, black, transparent 90%); mask-image:linear-gradient(0deg, black, transparent 90%); }
+.hero-grid-pattern{ position:absolute; inset:0; z-index:-2;
+  background-image:linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+  background-size:48px 48px;
+  -webkit-mask-image:radial-gradient(ellipse 60% 55% at 70% 40%, black 10%, transparent 72%);
+  mask-image:radial-gradient(ellipse 60% 55% at 70% 40%, black 10%, transparent 72%); }
+.hero-dust{ position:absolute; inset:0; z-index:-1; pointer-events:none; }
+.dust{ position:absolute; width:2px; height:2px; border-radius:50%; background:var(--red-hot); opacity:.6; box-shadow:0 0 6px var(--red-hot); animation:dustDrift linear infinite; }
+@keyframes dustDrift{ from{ transform:translateY(0); opacity:0;} 10%{opacity:.7;} 90%{opacity:.4;} to{ transform:translateY(-110vh); opacity:0;} }
+
+.hero-grid{ display:grid; grid-template-columns:1.05fr .95fr; gap:40px; align-items:center; width:100%; }
+.hero-badge{ display:inline-flex; align-items:center; gap:10px; padding:9px 20px; border-radius:999px; border:1px solid var(--glass-edge); background:linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.02)); backdrop-filter:blur(14px) saturate(160%); -webkit-backdrop-filter:blur(14px) saturate(160%); font-size:12.5px; font-weight:600; color:var(--gray); margin-bottom:22px; letter-spacing:.3px; box-shadow:inset 0 1px 0 rgba(255,255,255,.14); }
+.hero-badge .dot{ width:7px; height:7px; border-radius:50%; background:var(--red-hot); box-shadow:0 0 8px var(--red-hot); animation:dotBlink 1.6s infinite; }
+@keyframes dotBlink{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
+
+.hero-title{ font-family:var(--font-d); font-size:clamp(48px,8.2vw,104px); line-height:.96; letter-spacing:.5px; text-transform:uppercase; margin-bottom:20px; color:#fff; }
+#typed-cursor{ display:inline-block; width:4px; background:var(--red); margin-left:6px; box-shadow:var(--glow-red); animation:blinkCursor .9s steps(1) infinite; }
+@keyframes blinkCursor{ 50%{ opacity:0; } }
+
+.hero-tags{ display:flex; flex-wrap:wrap; gap:10px; margin-bottom:22px; }
+.hero-tag{ display:flex; align-items:center; gap:8px; padding:9px 16px; border-radius:12px; border:1px solid var(--glass-edge); background:linear-gradient(160deg, rgba(255,255,255,.07), rgba(255,255,255,.01)); backdrop-filter:blur(12px) saturate(160%); -webkit-backdrop-filter:blur(12px) saturate(160%); font-size:13.5px; font-weight:600; color:var(--white); opacity:0; animation:tagPopIn .6s var(--spring) forwards; transition:transform .4s var(--spring), border-color .3s; }
+.hero-tag:hover{ transform:translateY(-3px) scale(1.04); border-color:rgba(229,9,20,.4); }
+.hero-tag:nth-child(1){ animation-delay:1.9s; } .hero-tag:nth-child(2){ animation-delay:2.05s; } .hero-tag:nth-child(3){ animation-delay:2.2s; }
+@keyframes tagPopIn{ from{ opacity:0; transform:translateY(8px);} to{ opacity:1; transform:translateY(0);} }
+
+.hero-desc{ color:var(--gray); font-size:16px; max-width:520px; margin-bottom:26px; }
+.hero-actions{ display:flex; gap:16px; flex-wrap:wrap; margin-bottom:28px; }
+.btn{ padding:18px 32px; font-weight:700; font-size:15px; display:inline-flex; align-items:center; gap:10px; position:relative; overflow:hidden; letter-spacing:.3px; }
+.btn-primary{ background:var(--red); color:#fff; box-shadow:var(--glow-red); transition:transform .4s var(--spring), box-shadow .35s; }
+.btn-primary:hover{ transform:translateY(-4px); box-shadow:0 16px 40px rgba(229,9,20,.55), 0 0 50px rgba(229,9,20,.4); }
+.btn-primary:active{ transform:translateY(-1px) scale(.96); transition:transform .18s var(--spring); }
+.btn-primary::before{ content:''; position:absolute; top:0; left:-120%; width:60%; height:100%; background:linear-gradient(120deg, transparent, rgba(255,255,255,.5), transparent); transform:skewX(-20deg); animation:shineSweep 3s ease-in-out infinite; }
+@keyframes shineSweep{ 0%{ left:-120%; } 40%,100%{ left:140%; } }
+.btn-ghost{ padding:18px 32px; border-radius:4px; border:1px solid var(--glass-edge); background:linear-gradient(160deg, rgba(255,255,255,.06), transparent); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); color:#fff; font-weight:700; font-size:15px; display:inline-flex; align-items:center; gap:10px; transition:border-color .3s, transform .45s var(--spring), box-shadow .3s; }
+.btn-ghost:hover{ border-color:var(--red); transform:translateY(-3px); box-shadow:0 0 0 1px var(--red) inset; }
+.btn-ghost:active{ transform:scale(.96); transition:transform .18s var(--spring); }
+
+.hero-trust{ display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+.trust-avatars{ display:flex; }
+.trust-avatar{ width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:11.5px; font-weight:700; border:2px solid var(--black); margin-left:-10px; color:#fff; background:#1a1a1d; }
+.trust-avatar:first-child{ margin-left:0; }
+.a1{ background:var(--red); } .a2{ background:#3a3a3f; } .a3{ background:#232326; } .a4{ background:#151517; font-size:9.5px; }
+.trust-stars{ color:var(--red-hot); letter-spacing:2px; font-size:13px; }
+.trust-text{ font-size:13.5px; color:var(--gray); }
+
+.hero-counters{ display:flex; gap:44px; margin-top:14px; flex-wrap:wrap; }
+.counter-item .counter-num{ font-family:var(--font-d); font-size:clamp(26px,3vw,36px); color:#fff; display:flex; align-items:baseline; gap:2px; }
+.counter-item .counter-label{ font-size:12px; color:var(--gray); letter-spacing:1.5px; text-transform:uppercase; margin-top:4px; }
+
+/* ===== THE LAPTOP RIG — signature element, real perspective, travels via scroll ===== */
+.laptop-rig{ position:relative; height:520px; perspective:1400px; display:flex; align-items:center; justify-content:center; }
+.laptop-rig::before{ content:''; position:absolute; width:70%; height:60px; left:50%; bottom:6%; transform:translateX(-50%); background:radial-gradient(ellipse, rgba(229,9,20,.35), transparent 72%); filter:blur(24px); z-index:0; }
+.live-badge{ position:absolute; top:0; right:2%; align-items:center; gap:8px; padding:8px 14px; background:linear-gradient(160deg, rgba(255,255,255,.1), rgba(8,8,9,.72)); backdrop-filter:blur(16px) saturate(180%); -webkit-backdrop-filter:blur(16px) saturate(180%); border:1px solid var(--glass-edge); font-size:11.5px; font-weight:700; z-index:6; letter-spacing:.3px; box-shadow:inset 0 1px 0 rgba(255,255,255,.16); }
+.live-dot{ width:6px; height:6px; border-radius:50%; background:var(--red); box-shadow:0 0 8px var(--red); animation:dotBlink 1.2s infinite; }
+
+.laptop-float{ animation:laptopFloat 6.5s ease-in-out infinite; }
+@keyframes laptopFloat{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-14px);} }
+.laptop3d{ position:relative; width:340px; transform-style:preserve-3d; transform:rotateX(var(--rx,10deg)) rotateY(var(--ry,-18deg)) rotateZ(0deg); transition:transform .15s ease-out; will-change:transform; }
+.lap-lid{ position:relative; width:340px; height:216px; border-radius:12px 12px 3px 3px; background:linear-gradient(160deg,#161618,#040405); border:2px solid #202023; box-shadow:0 40px 80px rgba(0,0,0,.65), 0 0 70px rgba(229,9,20,.22); overflow:hidden; }
+.lap-screen{ position:absolute; inset:10px; border-radius:4px; background:radial-gradient(ellipse at 30% 20%, #1a0407, #030203 70%); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.lap-screen .n{ font-family:var(--font-d); color:var(--red); font-size:44px; text-shadow:var(--glow-red); letter-spacing:1px; z-index:2; }
+.lap-screen::after{ content:''; position:absolute; top:-40%; left:-60%; width:60%; height:220%; background:linear-gradient(100deg, transparent, rgba(255,255,255,.14) 45%, transparent 60%); transform:rotate(12deg); animation:screenSheen 5s ease-in-out infinite; pointer-events:none; }
+@keyframes screenSheen{ 0%,100%{ left:-60%; } 50%{ left:120%; } }
+.lap-scan{ position:absolute; left:0; right:0; height:2px; background:linear-gradient(90deg, transparent, rgba(229,9,20,.9), transparent); animation:lapScan 3s linear infinite; opacity:.7; }
+@keyframes lapScan{ 0%{ top:0; } 100%{ top:100%; } }
+.lap-hinge{ width:340px; height:8px; background:linear-gradient(180deg,#2a2a2e,#0a0a0b); margin:0 auto; border-radius:2px; }
+.lap-base{ width:380px; height:14px; margin:0 auto; background:linear-gradient(180deg,#232326,#08080a); border-radius:3px 3px 12px 12px; box-shadow:0 30px 40px rgba(0,0,0,.5); transform:translateX(-20px); }
+.lap-base::after{ content:''; position:absolute; }
+
+.float-chip{ position:absolute; z-index:4; padding:9px 15px; border-radius:10px; background:linear-gradient(160deg, rgba(255,255,255,.12), rgba(8,8,9,.68)); border:1px solid var(--glass-edge); font-family:var(--font-m); font-size:11px; font-weight:700; color:#fff; letter-spacing:.5px; backdrop-filter:blur(14px) saturate(160%); -webkit-backdrop-filter:blur(14px) saturate(160%); box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 10px 24px rgba(0,0,0,.35); animation:chipFloat 6s ease-in-out infinite; }
+.float-chip.c1{ left:-6%; top:16%; animation-delay:-1s; }
+.float-chip.c2{ right:-8%; top:34%; animation-delay:-2.4s; color:var(--red-hot); border-color:rgba(229,9,20,.4); }
+.float-chip.c3{ left:-2%; bottom:12%; animation-delay:-3.6s; }
+@keyframes chipFloat{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-14px);} }
+
+.poster-card{ position:absolute; width:64px; height:92px; border-radius:8px; background:linear-gradient(160deg,#18181b,#040405); border:1px solid var(--glass-edge); box-shadow:0 20px 40px rgba(0,0,0,.5); z-index:2; overflow:hidden; backdrop-filter:blur(10px); }
+.poster-card::before{ content:''; position:absolute; inset:0; opacity:.9; }
+.poster-card .poster-icon{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:.85; }
+.poster-1{ left:-10%; top:-4%; animation:posterFloat1 7.5s ease-in-out infinite; }
+.poster-1::before{ background:radial-gradient(120% 90% at 30% 15%, rgba(229,9,20,.55), transparent 60%), linear-gradient(200deg,#1c0508,#050203 75%); }
+.poster-2{ right:-12%; bottom:6%; animation:posterFloat2 8.5s ease-in-out infinite; }
+.poster-2::before{ background:radial-gradient(120% 90% at 70% 20%, rgba(255,255,255,.18), transparent 55%), linear-gradient(200deg,#141417,#040405 75%); }
+@keyframes posterFloat1{ 0%,100%{ transform:rotate(-9deg) translateY(0);} 50%{ transform:rotate(-5deg) translateY(-14px);} }
+@keyframes posterFloat2{ 0%,100%{ transform:rotate(7deg) translateY(0);} 50%{ transform:rotate(3deg) translateY(-12px);} }
+.poster-rating{ position:absolute; top:6px; left:6px; background:rgba(0,0,0,.65); font-size:9.5px; padding:2px 6px; color:var(--red-hot); font-weight:700; font-family:var(--font-m); }
+
+.ring-orbit{ position:absolute; width:420px; height:420px; border-radius:50%; border:1px dashed rgba(229,9,20,.14); animation:ringSpin 44s linear infinite; z-index:1; }
+.ring-orbit.r2{ width:340px; height:340px; border-color:rgba(255,255,255,.06); animation-duration:32s; animation-direction:reverse; }
+@keyframes ringSpin{ to{ transform:rotate(360deg); } }
+
+.scroll-cue{ position:absolute; bottom:26px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; align-items:center; gap:8px; font-size:11px; letter-spacing:2px; color:var(--gray); font-family:var(--font-m); }
+.mouse{ width:20px; height:32px; border:1px solid var(--line); border-radius:14px; position:relative; }
+.mouse::before{ content:''; position:absolute; top:6px; left:50%; transform:translateX(-50%); width:2px; height:6px; background:var(--red); border-radius:2px; animation:scrollDot 1.6s ease-in-out infinite; }
+@keyframes scrollDot{ 0%{ opacity:1; top:6px;} 70%{ opacity:0; top:18px;} 100%{ opacity:0; top:6px;} }
+
+@media (max-width:900px){
+  .hero-grid{ grid-template-columns:1fr; }
+  .laptop-rig{ height:380px; margin-top:20px; }
+  .laptop3d{ width:260px; } .lap-lid{ width:260px; height:166px; } .lap-hinge{ width:260px; } .lap-base{ width:292px; }
+}
+
+/* =========================================================
+   5. PRICING — control terminal
+========================================================= */
+#pricing{ background:radial-gradient(ellipse 100% 70% at 50% 0%, rgba(229,9,20,.08), transparent 78%), var(--black); }
+.radar-sweep{ position:absolute; top:-10%; left:50%; width:1100px; height:1100px; z-index:-1; opacity:.5; transform:translateX(-50%);
+  background:conic-gradient(from 0deg, transparent 0deg, rgba(229,9,20,.16) 18deg, transparent 46deg, transparent 360deg);
+  -webkit-mask-image:radial-gradient(ellipse 55% 55% at 50% 30%, black, transparent 78%); mask-image:radial-gradient(ellipse 55% 55% at 50% 30%, black, transparent 78%);
+  animation:radarSpin 14s linear infinite; }
+@keyframes radarSpin{ to{ transform:translateX(-50%) rotate(360deg); } }
+.term-beam{ position:absolute; top:-10%; width:2px; height:120%; background:linear-gradient(180deg, transparent, rgba(229,9,20,.6), transparent); animation:beamSweep 5s ease-in-out infinite; }
+.term-beam.tb1{ left:20%; } .term-beam.tb2{ left:52%; animation-delay:-2s; } .term-beam.tb3{ left:82%; animation-delay:-3.6s; }
+@keyframes beamSweep{ 0%,100%{ opacity:.2; transform:scaleY(.7);} 50%{ opacity:.75; transform:scaleY(1);} }
+
+.pricing-live-tag{ display:inline-flex; align-items:center; gap:8px; font-family:var(--font-m); font-size:11px; letter-spacing:2px; color:var(--gray); margin-bottom:16px; }
+.pricing-ticker{ overflow:hidden; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:14px 0; margin-bottom:56px; }
+.pricing-ticker-track{ display:flex; gap:44px; width:max-content; animation:tickerScroll 22s linear infinite; font-family:var(--font-m); font-size:12.5px; letter-spacing:1.5px; color:var(--gray); white-space:nowrap; }
+@keyframes tickerScroll{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+
+.pricing-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:26px; }
+.price-card{ position:relative; padding:38px 30px 34px; border:1px solid var(--glass-edge); background:linear-gradient(160deg, rgba(255,255,255,.06), rgba(6,6,7,.62)); backdrop-filter:blur(18px) saturate(160%); -webkit-backdrop-filter:blur(18px) saturate(160%); cursor:pointer; transition:transform .5s var(--spring), border-color .4s, box-shadow .4s; }
+.price-card:active{ transform:scale(.978) translateY(-8px); }
+.price-card:hover{ border-color:rgba(229,9,20,.5); transform:translateY(-10px); box-shadow:0 26px 60px rgba(0,0,0,.45), var(--glow-red); }
+.price-card.best{ border-color:rgba(229,9,20,.55); background:linear-gradient(160deg, rgba(229,9,20,.1), rgba(6,6,7,.72)); }
+.best-badge{ position:absolute; top:-13px; left:30px; background:var(--red); color:#fff; font-size:11.5px; font-weight:800; padding:6px 14px; letter-spacing:.5px; box-shadow:var(--glow-red); }
+.price-card-tag{ font-family:var(--font-m); font-size:11px; color:var(--red-hot); letter-spacing:2px; margin-bottom:18px; }
+.plan-live{ display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--gray); margin-bottom:6px; }
+.live-dot-sm{ width:5px; height:5px; border-radius:50%; background:#5fdc8a; box-shadow:0 0 6px #5fdc8a; }
+.plan-name{ font-size:14.5px; color:var(--gray); margin-bottom:2px; }
+.plan-duration{ font-family:var(--font-d); font-size:26px; letter-spacing:.5px; text-transform:uppercase; margin-bottom:16px; }
+.plan-price{ display:flex; align-items:baseline; gap:8px; margin-bottom:24px; padding-bottom:24px; border-bottom:1px solid var(--line); }
+.plan-price .num{ font-family:var(--font-d); font-size:38px; color:#fff; }
+.plan-price .unit{ font-size:13px; color:var(--gray); }
+.plan-features{ display:flex; flex-direction:column; gap:12px; margin-bottom:28px; }
+.plan-features li{ display:flex; gap:10px; font-size:14px; color:var(--white); align-items:flex-start; }
+.plan-features .check{ color:var(--red-hot); font-weight:800; }
+.plan-btn{ width:100%; padding:15px; border-radius:8px; border:1px solid var(--line); color:#fff; font-weight:700; font-size:14.5px; transition:background .3s, border-color .3s, transform .4s var(--spring); position:relative; overflow:hidden; }
+.plan-btn:active{ transform:scale(.96); transition:transform .18s var(--spring); }
+.price-card:hover .plan-btn, .price-card.best .plan-btn{ background:var(--red); border-color:var(--red); }
+@media (max-width:900px){ .pricing-grid{ grid-template-columns:1fr; } }
+
+/* glare / spotlight hover — glass reflection following cursor */
+.price-card::after, .hud-panel::after, .pod::after, .signal-msg::after{ content:''; position:absolute; inset:0; pointer-events:none; z-index:3; opacity:0; transition:opacity .4s ease;
+  background:radial-gradient(circle 190px at var(--mx,50%) var(--my,50%), rgba(255,255,255,.12), rgba(229,9,20,.05) 42%, transparent 72%); }
+.price-card:hover::after, .hud-panel:hover::after, .pod:hover::after, .signal-msg:hover::after{ opacity:1; }
+
+/* ember particles rising from the featured plan */
+.ember-wrap{ position:absolute; inset:0; pointer-events:none; z-index:1; }
+.ember{ position:absolute; bottom:0; width:3px; height:3px; border-radius:50%; background:var(--red-hot); box-shadow:0 0 7px var(--red-hot); opacity:0; animation:emberRise linear forwards; }
+@keyframes emberRise{ 0%{ transform:translateY(0) translateX(0); opacity:0;} 12%{ opacity:.9;} 100%{ transform:translateY(-170px) translateX(var(--dx,12px)); opacity:0;} }
+
+/* =========================================================
+   6. WHY — data chamber / lab, single red core
+========================================================= */
+#why{ background:radial-gradient(ellipse 90% 90% at 50% 50%, rgba(229,9,20,.07), transparent 75%), var(--black); }
+.chamber-wrap{ position:relative; display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+.chamber-core{ position:relative; height:440px; display:flex; align-items:center; justify-content:center; }
+.chamber-ring{ position:absolute; border:1px solid rgba(229,9,20,.28); border-radius:50%; }
+.chamber-ring.r1{ width:290px; height:290px; animation:ringSpin 22s linear infinite; }
+.chamber-ring.r2{ width:210px; height:210px; border-style:dashed; animation:ringSpin 16s linear infinite reverse; }
+.chamber-center{ width:132px; height:132px; border-radius:50%; background:radial-gradient(circle, rgba(229,9,20,.5), rgba(229,9,20,.05) 70%); box-shadow:0 0 80px rgba(229,9,20,.55), inset 0 0 46px rgba(229,9,20,.4); display:flex; align-items:center; justify-content:center; font-family:var(--font-d); font-size:14px; letter-spacing:1px; text-align:center; animation:coreThrob 3s ease-in-out infinite; }
+@keyframes coreThrob{ 0%,100%{ box-shadow:0 0 80px rgba(229,9,20,.55), inset 0 0 46px rgba(229,9,20,.4);} 50%{ box-shadow:0 0 118px rgba(229,9,20,.8), inset 0 0 60px rgba(229,9,20,.6);} }
+.data-block{ position:absolute; padding:9px 15px; background:rgba(8,8,9,.75); border:1px solid rgba(229,9,20,.35); font-family:var(--font-m); font-size:11.5px; color:var(--white); box-shadow:0 10px 26px rgba(0,0,0,.4); animation:dataFloat 5s ease-in-out infinite; }
+.data-block.d1{ top:2%; left:-6%; animation-delay:-.5s; } .data-block.d2{ top:8%; right:-10%; animation-delay:-1.6s; }
+.data-block.d3{ bottom:10%; left:-10%; animation-delay:-2.8s; } .data-block.d4{ bottom:0; right:-4%; animation-delay:-3.6s; }
+@keyframes dataFloat{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-12px);} }
+.chamber-list{ display:flex; flex-direction:column; gap:20px; }
+.chamber-item{ display:flex; gap:18px; align-items:flex-start; padding:22px; border:1px solid var(--line); background:linear-gradient(160deg, rgba(229,9,20,.04), rgba(8,8,9,.4)); position:relative; overflow:hidden; transition:border-color .35s, transform .35s var(--ease), background .35s; }
+.chamber-item:hover{ border-color:rgba(229,9,20,.55); transform:translateX(10px); background:linear-gradient(160deg, rgba(229,9,20,.12), rgba(8,8,9,.55)); }
+.chamber-num{ font-family:var(--font-m); font-size:13px; color:var(--red-hot); border:1px solid rgba(229,9,20,.35); padding:6px 10px; flex-shrink:0; }
+.chamber-item h4{ font-size:16.5px; font-weight:800; margin-bottom:6px; color:#fff; }
+.chamber-item p{ font-size:14px; color:var(--gray); line-height:1.6; }
+@media (max-width:900px){ .chamber-wrap{ grid-template-columns:1fr; } .chamber-core{ height:320px; } }
+
+/* =========================================================
+   7. FEATURES — HUD module wall
+========================================================= */
+#features{ background:radial-gradient(ellipse 100% 80% at 50% 0%, rgba(229,9,20,.06), transparent 78%), var(--black); }
+.hud-floor{ position:absolute; left:-20%; right:-20%; bottom:-16%; height:60%; z-index:-1; opacity:.4;
+  background-image:linear-gradient(rgba(229,9,20,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(229,9,20,.3) 1px, transparent 1px);
+  background-size:58px 58px; transform:perspective(500px) rotateX(62deg); transform-origin:bottom;
+  -webkit-mask-image:linear-gradient(0deg, black 10%, transparent 92%); mask-image:linear-gradient(0deg, black 10%, transparent 92%); }
+.hud-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; }
+.hud-panel{ position:relative; padding:30px 24px 28px; border:1px solid var(--glass-edge); background:linear-gradient(160deg, rgba(255,255,255,.06), rgba(8,8,9,.72)); backdrop-filter:blur(16px) saturate(160%); -webkit-backdrop-filter:blur(16px) saturate(160%); transition:transform .5s var(--spring), border-color .4s, box-shadow .4s; }
+.hud-panel:active{ transform:scale(.98) translateY(-10px); }
+.hud-panel:hover{ transform:translateY(-12px); border-color:rgba(229,9,20,.5); box-shadow:0 26px 55px rgba(0,0,0,.45); }
+.hud-id{ font-family:var(--font-m); font-size:10.5px; color:var(--red-hot); letter-spacing:2px; opacity:.75; margin-bottom:14px; }
+.hud-icon{ width:48px; height:48px; display:flex; align-items:center; justify-content:center; font-size:22px; border:1px solid var(--line); margin-bottom:18px; transition:transform .5s var(--ease), border-color .4s; }
+.hud-panel:hover .hud-icon{ border-color:rgba(229,9,20,.5); transform:rotate(-8deg); }
+.hud-corner{ position:absolute; width:12px; height:12px; border-top:2px solid rgba(229,9,20,.5); border-left:2px solid rgba(229,9,20,.5); top:8px; left:8px; opacity:.4; transition:opacity .4s; }
+.hud-corner.br{ top:auto; left:auto; bottom:8px; right:8px; border-top:none; border-left:none; border-bottom:2px solid rgba(229,9,20,.5); border-right:2px solid rgba(229,9,20,.5); }
+.hud-panel:hover .hud-corner{ opacity:1; }
+.hud-title{ font-weight:800; font-size:17.5px; margin-bottom:8px; color:#fff; }
+.hud-text{ font-size:14px; color:var(--gray); line-height:1.65; }
+.hud-scan{ position:absolute; left:0; right:0; height:1px; top:0; background:linear-gradient(90deg, transparent, rgba(229,9,20,.85), transparent); opacity:.4; animation:hudScan 2.6s linear infinite; }
+.hud-panel:hover .hud-scan{ opacity:1; animation:hudScan 1.4s linear infinite; }
+@keyframes hudScan{ 0%{ top:0; } 100%{ top:100%; } }
+@media (max-width:900px){ .hud-grid{ grid-template-columns:1fr; } }
+
+/* =========================================================
+   8. SHOWROOM — products on illuminated platforms
+========================================================= */
+#showroom{ background:radial-gradient(ellipse 100% 90% at 50% 100%, rgba(229,9,20,.07), transparent 80%), var(--black); }
+.showroom-floor{ position:absolute; left:0; right:0; bottom:-15%; height:55%; z-index:-1; background:linear-gradient(0deg, rgba(255,255,255,.04), transparent); -webkit-mask-image:linear-gradient(0deg, black, transparent 90%); }
+.showroom-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:22px; }
+.pod{ position:relative; padding:36px 18px 28px; text-align:center; border:1px solid var(--glass-edge); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(6,6,7,.58)); backdrop-filter:blur(16px) saturate(160%); -webkit-backdrop-filter:blur(16px) saturate(160%); transition:transform .5s var(--spring), border-color .4s; }
+.pod:active{ transform:scale(.978) translateY(-8px); }
+.pod:hover{ transform:translateY(-10px); border-color:rgba(229,9,20,.45); }
+.pod-platform{ position:relative; width:118px; height:118px; margin:0 auto 20px; display:flex; align-items:center; justify-content:center; }
+.pod-platform::before{ content:''; position:absolute; bottom:-6px; width:92px; height:16px; border-radius:50%; background:radial-gradient(ellipse, var(--red), transparent 70%); filter:blur(6px); opacity:.6; animation:platformGlow 3s ease-in-out infinite; }
+@keyframes platformGlow{ 0%,100%{ opacity:.35; transform:scaleX(.9);} 50%{ opacity:.75; transform:scaleX(1.05);} }
+.pod-obj{ position:relative; overflow:hidden; width:80px; height:80px; border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:32px; background:linear-gradient(155deg, rgba(255,255,255,.16), var(--red-deep) 120%); box-shadow:inset 0 1px 0 rgba(255,255,255,.25), 0 16px 36px rgba(0,0,0,.5), 0 0 30px rgba(229,9,20,.3); animation:podSpin 8s ease-in-out infinite; transition:transform .5s var(--spring); }
+@keyframes podSpin{ 0%,100%{ transform:rotateY(0deg) translateY(0);} 50%{ transform:rotateY(180deg) translateY(-8px);} }
+.pod:hover .pod-obj{ transform:rotateY(360deg) scale(1.08); }
+.pod-ring{ position:absolute; width:106px; height:106px; border:1px dashed rgba(229,9,20,.35); border-radius:50%; animation:ringSpin 12s linear infinite; }
+.pod-name{ font-weight:800; font-size:15px; margin-bottom:6px; color:#fff; }
+.pod-desc{ font-size:13px; color:var(--gray); margin-bottom:14px; }
+.pod-tag{ display:inline-block; font-family:var(--font-m); font-size:10px; letter-spacing:1.5px; color:var(--red-hot); border:1px solid rgba(229,9,20,.3); padding:4px 10px; }
+@media (max-width:900px){ .showroom-grid{ grid-template-columns:1fr 1fr; } }
+
+/* =========================================================
+   9. TESTIMONIALS — signal transmissions
+========================================================= */
+#testimonials{ background:radial-gradient(ellipse 100% 80% at 50% 0%, rgba(229,9,20,.05), transparent 78%), var(--black); }
+.signal-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.signal-msg{ position:relative; overflow:hidden; padding:28px 26px 26px; border:1px solid var(--line); background:linear-gradient(160deg, rgba(255,255,255,.02), rgba(8,8,9,.6)); transition:border-color .4s, transform .4s var(--ease); }
+.signal-msg:hover{ border-color:rgba(229,9,20,.45); transform:translateY(-6px); }
+.signal-msg::before{ content:''; position:absolute; left:0; right:0; top:-10%; height:2px; background:linear-gradient(90deg, transparent, rgba(229,9,20,.9), transparent); opacity:0; z-index:2; pointer-events:none; }
+.signal-msg.auto-scan::before{ opacity:.85; animation:signalScan .9s linear; }
+@keyframes signalScan{ 0%{ top:-4%; } 100%{ top:104%; } }
+.signal-quote{ font-family:var(--font-d); font-size:38px; color:var(--red); opacity:.5; line-height:1; margin-bottom:6px; }
+.signal-head{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+.signal-avatar{ width:38px; height:38px; border-radius:50%; background:var(--red-deep); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:14px; color:#fff; border:1px solid rgba(229,9,20,.4); }
+.signal-name{ font-weight:700; font-size:14.5px; }
+.signal-stars{ color:var(--red-hot); font-size:12px; letter-spacing:1.5px; }
+.signal-text{ font-size:14px; color:var(--gray); line-height:1.65; }
+@media (max-width:900px){ .signal-grid{ grid-template-columns:1fr; } }
+
+/* =========================================================
+   10. FOOTER — command center, fades to black
+========================================================= */
+footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180deg, var(--black) 0%, #000 100%); overflow:hidden; margin-top:-1px; }
+.footer-scan{ position:absolute; inset:0; z-index:0; opacity:.3; background-image:repeating-linear-gradient(180deg, rgba(229,9,20,.05) 0 1px, transparent 1px 60px); }
+.footer-grid{ position:relative; z-index:1; display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr; gap:40px; margin-bottom:50px; }
+.footer-brand p{ color:var(--gray); font-size:14px; margin:16px 0 20px; max-width:280px; }
+.footer-social{ display:flex; gap:10px; }
+.footer-social a{ width:36px; height:36px; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; transition:border-color .3s, color .3s, transform .3s var(--ease), box-shadow .3s; }
+.footer-social a:hover{ border-color:var(--red); color:var(--red-hot); transform:translateY(-4px); box-shadow:0 10px 22px rgba(229,9,20,.35); }
+.footer-col h5{ font-size:13px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gray); margin-bottom:18px; }
+.footer-col ul{ display:flex; flex-direction:column; gap:12px; }
+.footer-col a{ font-size:14px; color:var(--white); transition:color .3s; }
+.footer-col a:hover{ color:var(--red-hot); }
+.footer-bottom{ position:relative; z-index:1; display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; padding-top:26px; border-top:1px solid var(--line); font-size:12.5px; color:var(--gray); }
+@media (max-width:900px){ .footer-grid{ grid-template-columns:1fr 1fr; } }
+@media (max-width:560px){ .footer-grid{ grid-template-columns:1fr; } }
+
+/* =========================================================
+   11. POPUP + TOAST + BACK TO TOP
+========================================================= */
+#popup-overlay{ position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.8); backdrop-filter:blur(6px); display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:opacity .35s var(--ease), visibility .35s; padding:20px; }
+#popup-overlay.active{ opacity:1; visibility:visible; }
+.popup-box{ position:relative; width:min(420px,100%); background:linear-gradient(160deg, rgba(255,255,255,.08), rgba(15,15,18,.78)); backdrop-filter:blur(28px) saturate(180%); -webkit-backdrop-filter:blur(28px) saturate(180%); border:1px solid rgba(229,9,20,.35); padding:40px 34px 34px; text-align:center; transform:scale(.86); transition:transform .55s var(--spring); box-shadow:inset 0 1px 0 rgba(255,255,255,.2), 0 40px 90px rgba(0,0,0,.6), var(--glow-red); overflow:hidden; }
+.popup-box::before{ content:''; position:absolute; left:10%; right:10%; top:0; height:1px; background:linear-gradient(90deg, transparent, var(--glass-edge-red), rgba(255,255,255,.55), var(--glass-edge-red), transparent); opacity:.6; }
+#popup-overlay.active .popup-box{ transform:scale(1); }
+.popup-close{ position:absolute; top:16px; right:16px; width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,.06); backdrop-filter:blur(8px); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; color:var(--gray); transition:border-color .3s, color .3s, transform .4s var(--spring), background .3s; }
+.popup-close:hover{ border-color:var(--red); color:#fff; transform:rotate(90deg); background:rgba(229,9,20,.12); }
+.popup-close:active{ transform:rotate(90deg) scale(.85); }
+.popup-icon{ font-size:38px; margin-bottom:14px; }
+.popup-title{ font-size:13px; letter-spacing:1.5px; text-transform:uppercase; color:var(--gray); margin-bottom:8px; }
+.popup-plan-name{ font-family:var(--font-d); font-size:26px; margin-bottom:6px; letter-spacing:.5px; }
+.popup-plan-price{ font-family:var(--font-d); font-size:32px; color:var(--red-hot); text-shadow:var(--glow-red); margin-bottom:22px; }
+.popup-divider{ height:1px; background:var(--line); margin-bottom:22px; }
+.popup-contact-label{ font-size:12.5px; color:var(--gray); margin-bottom:12px; letter-spacing:.5px; }
+.popup-phone-row{ display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:20px; }
+.phone-num{ font-family:var(--font-m); font-size:19px; font-weight:700; }
+.copy-btn{ padding:9px 16px; border-radius:8px; border:1px solid var(--line); font-size:12.5px; font-weight:700; color:#fff; transition:border-color .3s, background .3s, transform .4s var(--spring); position:relative; overflow:hidden; }
+.copy-btn:hover{ border-color:var(--red); }
+.copy-btn:active{ transform:scale(.92); transition:transform .18s var(--spring); }
+.copy-btn.copied{ background:var(--red); border-color:var(--red); }
+.zalo-btn{ display:block; width:100%; padding:16px; border-radius:10px; background:var(--red); color:#fff; font-weight:700; font-size:15px; margin-bottom:14px; box-shadow:var(--glow-red); transition:transform .45s var(--spring); position:relative; overflow:hidden; }
+.zalo-btn:hover{ transform:translateY(-3px); }
+.zalo-btn:active{ transform:scale(.96); transition:transform .18s var(--spring); }
+.popup-note{ font-size:12px; color:var(--gray); }
+
+#toast{ position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(20px) scale(.92); background:linear-gradient(160deg, rgba(255,255,255,.1), rgba(15,15,18,.75)); backdrop-filter:blur(22px) saturate(180%); -webkit-backdrop-filter:blur(22px) saturate(180%); border:1px solid rgba(229,9,20,.35); border-radius:999px; padding:14px 24px; font-size:13.5px; display:flex; align-items:center; gap:10px; z-index:600; opacity:0; visibility:hidden; transition:opacity .4s var(--spring-soft), visibility .4s, transform .55s var(--spring); box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 20px 50px rgba(0,0,0,.5); }
+#toast.show{ opacity:1; visibility:visible; transform:translateX(-50%) translateY(0) scale(1); }
+.dot2{ color:var(--red-hot); font-size:10px; }
+
+#back-to-top{ position:fixed; bottom:28px; right:28px; width:48px; height:48px; border-radius:50%; background:linear-gradient(160deg, rgba(255,255,255,.1), rgba(15,15,18,.6)); backdrop-filter:blur(18px) saturate(180%); -webkit-backdrop-filter:blur(18px) saturate(180%); border:1px solid var(--glass-edge); color:#fff; font-size:18px; z-index:150; opacity:0; visibility:hidden; transform:translateY(10px) scale(.8); transition:opacity .35s var(--spring-soft), visibility .35s, transform .5s var(--spring), border-color .3s, color .3s; display:flex; align-items:center; justify-content:center; box-shadow:inset 0 1px 0 rgba(255,255,255,.16); }
+#back-to-top.show{ opacity:1; visibility:visible; transform:translateY(0) scale(1); }
+#back-to-top:hover{ border-color:var(--red); color:var(--red-hot); transform:translateY(-3px) scale(1.06); }
+#back-to-top:active{ transform:scale(.9); }
+
+#music-widget{ position:fixed; bottom:28px; left:28px; z-index:150; display:flex; flex-direction:column; align-items:flex-start; gap:0; }
+#music-toggle{ width:48px; height:48px; border-radius:50%; background:linear-gradient(160deg, rgba(255,255,255,.1), rgba(15,15,18,.6)); backdrop-filter:blur(18px) saturate(180%); -webkit-backdrop-filter:blur(18px) saturate(180%); border:1px solid var(--glass-edge); color:#fff; font-size:17px; display:flex; align-items:center; justify-content:center; transition:border-color .3s, color .3s, transform .5s var(--spring); position:relative; box-shadow:inset 0 1px 0 rgba(255,255,255,.16); }
+#music-toggle:hover{ border-color:var(--red); color:var(--red-hot); transform:scale(1.06); }
+#music-toggle:active{ transform:scale(.9); }
+#music-toggle .eq{ display:flex; align-items:flex-end; gap:2px; height:14px; }
+#music-toggle .eq span{ width:2px; background:var(--red-hot); animation:eqBar 1s ease-in-out infinite; }
+#music-toggle .eq span:nth-child(1){ height:40%; animation-delay:-.6s; }
+#music-toggle .eq span:nth-child(2){ height:100%; animation-delay:-.2s; }
+#music-toggle .eq span:nth-child(3){ height:65%; animation-delay:-.9s; }
+@keyframes eqBar{ 0%,100%{ transform:scaleY(.4);} 50%{ transform:scaleY(1);} }
+#music-widget:not(.playing) #music-toggle .eq span{ animation-play-state:paused; transform:scaleY(.3); }
+#music-panel{ position:absolute; bottom:58px; left:0; width:280px; border-radius:16px; background:linear-gradient(160deg, rgba(255,255,255,.08), rgba(15,15,18,.75)); backdrop-filter:blur(24px) saturate(180%); -webkit-backdrop-filter:blur(24px) saturate(180%); border:1px solid rgba(229,9,20,.3); box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 30px 70px rgba(0,0,0,.55), var(--glow-red); opacity:0; visibility:hidden; transform:translateY(14px) scale(.92); transition:opacity .4s var(--spring-soft), visibility .4s, transform .5s var(--spring); overflow:hidden; }
+#music-widget.open #music-panel{ opacity:1; visibility:visible; transform:translateY(0) scale(1); }
+#music-panel-head{ padding:10px 14px; font-family:var(--font-m); font-size:10.5px; letter-spacing:2px; color:var(--red-hot); border-bottom:1px solid var(--line); }
+.sound-hint{ position:fixed; bottom:84px; left:28px; z-index:150; background:var(--panel); border:1px solid rgba(229,9,20,.4); padding:9px 16px; font-size:11.5px; font-weight:600; color:#fff; box-shadow:var(--glow-red); opacity:0; transform:translateY(8px); transition:opacity .4s var(--ease), transform .4s var(--ease); pointer-events:none; white-space:nowrap; }
+.sound-hint.show{ opacity:1; transform:translateY(0); animation:hintPulse 1.8s ease-in-out infinite; }
+@keyframes hintPulse{ 0%,100%{ box-shadow:var(--glow-red);} 50%{ box-shadow:0 0 30px rgba(229,9,20,.85);} }
+@media (max-width:560px){ #music-widget{ left:16px; bottom:16px; } #music-panel{ width:min(84vw,280px); } .sound-hint{ left:16px; bottom:74px; font-size:10.5px; } }
+
+@media (prefers-reduced-motion:reduce){ *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
+</style>
+</head>
+<body>
+
+<div id="loading-screen">
+  <div class="loader-curtain l"></div>
+  <div class="loader-curtain r"></div>
+  <div class="loader-content">
+    <div class="loader-logo">NETFLIX <span style="color:#fff;">PREMIUM</span></div>
+    <div class="loader-bar-track"><div class="loader-bar-fill" id="loader-fill"></div></div>
+    <div class="loader-percent" id="loader-percent">0%</div>
+  </div>
+</div>
+
+<canvas id="particle-canvas"></canvas>
+<div id="ambient-wash"></div>
+<div id="scene-tint"></div>
+<div id="vignette"></div>
+<div id="noise-overlay"></div>
+<div id="cursor-glow"></div>
+<div id="cursor-ring"></div>
+<div class="reel"><div class="reel-fill" id="reel-fill"></div></div>
+<div class="sound-hint" id="sound-hint">🔊 Chạm màn hình để bật nhạc nền</div>
+<nav id="dot-nav">
+  <a href="#hero" data-label="Trang chủ"></a>
+  <a href="#pricing" data-label="Bảng giá"></a>
+  <a href="#why" data-label="Vì sao chọn"></a>
+  <a href="#features" data-label="Tính năng"></a>
+  <a href="#showroom" data-label="Sản phẩm"></a>
+  <a href="#testimonials" data-label="Đánh giá"></a>
+</nav>
+
+<div class="page-content">
+
+  <header id="navbar">
+    <div class="container nav-inner">
+      <a href="#hero" class="nav-logo">NETFLIX<span>.</span>PREMIUM</a>
+      <nav class="nav-links" id="nav-links">
+        <a href="#hero">Trang chủ</a>
+        <a href="#pricing">Bảng giá</a>
+        <a href="#why">Vì sao chọn</a>
+        <a href="#features">Tính năng</a>
+        <a href="#showroom">Sản phẩm</a>
+        <a href="#testimonials">Đánh giá</a>
+        <a href="#pricing" class="nav-cta ripple-el">Mua ngay</a>
+      </nav>
+      <div class="nav-toggle" id="nav-toggle"><span></span><span></span><span></span></div>
+    </div>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section id="hero">
+    <div class="hero-stage"></div>
+    <div class="hero-beam"></div>
+    <div class="hero-floor"></div>
+    <div class="hero-grid-pattern"></div>
+    <div class="hero-dust" id="hero-dust"></div>
+    <div class="liquid-blob" style="width:340px;height:340px;right:6%;top:8%;background:radial-gradient(circle at 35% 30%, rgba(229,9,20,.28), transparent 68%); z-index:-2;"></div>
+    <div class="liquid-blob" style="width:220px;height:220px;left:2%;bottom:4%;background:radial-gradient(circle at 60% 40%, rgba(255,255,255,.05), transparent 70%); z-index:-2; animation-duration:12s; animation-delay:-3s;"></div>
+    <div class="container hero-grid">
+      <div>
+        <div class="hero-badge"><span class="dot"></span> Tài khoản chính chủ · Bảo hành trọn gói</div>
+        <h1 class="hero-title"><span id="typed-text"></span><span id="typed-cursor">&nbsp;</span></h1>
+        <div class="hero-tags">
+          <div class="hero-tag">🎬 Giải trí đỉnh cao</div>
+          <div class="hero-tag">♾️ Không giới hạn</div>
+          <div class="hero-tag">📺 4K HDR</div>
+        </div>
+        <p class="hero-desc">Trải nghiệm kho phim và series khổng lồ với chất lượng hình ảnh 4K HDR sắc nét, âm thanh sống động, xem trên mọi thiết bị — không quảng cáo, không giới hạn thời gian.</p>
+        <div class="hero-actions">
+          <a href="#pricing" class="btn btn-primary corner-cut ripple-el">Mua Ngay</a>
+          <a href="https://zalo.me/0818105658" target="_blank" rel="noopener" class="btn-ghost ripple-el">💬 Nhắn Zalo Ngay</a>
+        </div>
+        <div class="hero-trust">
+          <div class="trust-avatars">
+            <div class="trust-avatar a1">M</div><div class="trust-avatar a2">H</div><div class="trust-avatar a3">T</div><div class="trust-avatar a4">99+</div>
+          </div>
+          <div class="trust-info">
+            <div class="trust-stars">★★★★★</div>
+            <div class="trust-text"><b>4.9/5</b> từ hơn 12.000 khách hàng đã trải nghiệm</div>
+          </div>
+        </div>
+        <div class="hero-counters">
+          <div class="counter-item"><div class="counter-num"><span class="counter" data-target="12000">0</span>+</div><div class="counter-label">Khách hàng</div></div>
+          <div class="counter-item"><div class="counter-num"><span class="counter" data-target="4">0</span>K</div><div class="counter-label">Độ phân giải</div></div>
+          <div class="counter-item"><div class="counter-num"><span class="counter" data-target="99">0</span>%</div><div class="counter-label">Hài lòng</div></div>
+        </div>
+      </div>
+      <div class="laptop-rig" id="laptop-rig">
+        <div class="live-badge glass dyn-island"><div class="glass-rim"></div><span class="live-dot"></span> 1.284 người đang xem<span class="dyn-more">&nbsp;·&nbsp;kích hoạt trong 5 phút</span></div>
+        <div class="ring-orbit"></div>
+        <div class="ring-orbit r2"></div>
+        <div class="poster-card poster-1"><div class="poster-icon"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity=".8"><path d="M4 6.5 12 3l8 3.5v9L12 19l-8-3.5Z"/><path d="M4 6.5 12 10l8-3.5M12 10v9"/></svg></div><div class="poster-rating">★ 9.2</div></div>
+        <div class="poster-card poster-2"><div class="poster-icon"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity=".8"><path d="M12 3v3.2M12 17.8V21M3 12h3.2M17.8 12H21"/><circle cx="12" cy="12" r="4.2"/></svg></div><div class="poster-rating">★ 8.8</div></div>
+        <div class="laptop-float">
+          <div class="laptop3d" id="laptop3d">
+            <div class="lap-lid"><div class="lap-scan"></div><div class="lap-screen"><span class="n">N</span></div></div>
+            <div class="lap-hinge"></div>
+            <div class="lap-base"></div>
+          </div>
+        </div>
+        <div class="float-chip c1">🔊 DOLBY ATMOS</div>
+        <div class="float-chip c2">4K · HDR</div>
+        <div class="float-chip c3">🚀 SCI-FI · TOP #1</div>
+      </div>
+    </div>
+    <div class="scroll-cue"><span class="mouse"></span> CUỘN XUỐNG</div>
+    <svg class="circuit-art" style="left:-2%;bottom:6%;width:340px;height:280px;" viewBox="0 0 340 280" aria-hidden="true">
+      <path d="M10 270 L70 210 L70 150 L120 100 L120 60 L170 10"/>
+      <path class="trace-glow" d="M10 270 L70 210 L70 150 L120 100 L120 60 L170 10"/>
+      <path d="M40 260 L110 190 L160 190 L200 150"/>
+      <path d="M200 150 L260 150 L300 110"/>
+      <circle cx="70" cy="210" r="3"/><circle cx="120" cy="100" r="3"/><circle cx="200" cy="150" r="3"/><circle cx="300" cy="110" r="3"/>
+    </svg>
+    <div class="diagonal-seam">
+      <svg viewBox="0 0 1200 110" preserveAspectRatio="none">
+        <polygon class="seam-fill" points="0,110 1200,110 1200,40 0,90"/>
+        <line class="seam-line" x1="0" y1="90" x2="1200" y2="40"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ============ PRICING ============ -->
+  <section id="pricing">
+    <div class="radar-sweep"></div>
+    <div class="term-beam tb1"></div><div class="term-beam tb2"></div><div class="term-beam tb3"></div>
+    <div class="container">
+      <div class="head reveal">
+        <span class="eyebrow">// Bàn điều khiển giá</span>
+        <div class="pricing-live-tag"><span class="live-dot"></span> HỆ THỐNG GIÁ · TRỰC TUYẾN</div>
+        <h2 class="title">Chọn Gói Phù Hợp <i>Với Bạn</i></h2>
+        <p class="desc">Giá cực rẻ, kích hoạt tức thì, hỗ trợ 24/7. Chọn một gói bên dưới để xem thông tin liên hệ đặt mua.</p>
+      </div>
+      <div class="pricing-ticker">
+        <div class="pricing-ticker-track">
+          <span>⚡ KÍCH HOẠT TRONG 5 PHÚT</span><span>🔒 TÀI KHOẢN CHÍNH CHỦ</span><span>💬 HỖ TRỢ 24/7 QUA ZALO</span><span>✓ BẢO HÀNH TRỌN GÓI</span><span>💰 GIÁ TỐT NHẤT THỊ TRƯỜNG</span>
+          <span>⚡ KÍCH HOẠT TRONG 5 PHÚT</span><span>🔒 TÀI KHOẢN CHÍNH CHỦ</span><span>💬 HỖ TRỢ 24/7 QUA ZALO</span><span>✓ BẢO HÀNH TRỌN GÓI</span><span>💰 GIÁ TỐT NHẤT THỊ TRƯỜNG</span>
+        </div>
+      </div>
+      <div class="pricing-grid">
+        <div class="price-card reveal reveal-d1" data-name="Gói 7 Ngày" data-price="20.000đ" tabindex="0">
+          <div class="price-card-tag">NODE // 7D</div>
+          <div class="plan-live"><span class="live-dot-sm"></span> Còn hàng</div><div class="plan-name">Trải nghiệm</div>
+          <div class="plan-duration">7 Ngày</div>
+          <div class="plan-price"><span class="num">20.000</span><span class="unit">đ / 7 ngày</span></div>
+          <ul class="plan-features">
+            <li><span class="check">✓</span> Xem 4K HDR không giới hạn</li>
+            <li><span class="check">✓</span> Dùng trên TV, điện thoại, laptop</li>
+            <li><span class="check">✓</span> Bảo hành toàn thời gian gói</li>
+            <li><span class="check">✓</span> Hỗ trợ nhanh qua Zalo</li>
+          </ul>
+          <button class="plan-btn ripple-el">Chọn Gói Này</button>
+        </div>
+        <div class="price-card best corner-cut reveal reveal-d2" data-name="Gói 30 Ngày" data-price="30.000đ" tabindex="0">
+          <div class="ember-wrap" id="ember-best"></div>
+          <div class="best-badge">🔥 Bán chạy</div>
+          <div class="price-card-tag">NODE // 30D</div>
+          <div class="plan-live"><span class="live-dot-sm"></span> Còn hàng</div><div class="plan-name">Phổ biến nhất</div>
+          <div class="plan-duration">30 Ngày</div>
+          <div class="plan-price"><span class="num">30.000</span><span class="unit">đ / 30 ngày</span></div>
+          <ul class="plan-features">
+            <li><span class="check">✓</span> Xem 4K HDR không giới hạn</li>
+            <li><span class="check">✓</span> Dùng trên TV, điện thoại, laptop</li>
+            <li><span class="check">✓</span> Bảo hành toàn thời gian gói</li>
+            <li><span class="check">✓</span> Hỗ trợ nhanh qua Zalo</li>
+            <li><span class="check">✓</span> Dùng trọn tháng, tối ưu chi phí nhất</li>
+          </ul>
+          <button class="plan-btn ripple-el">Chọn Gói Này</button>
+        </div>
+        <div class="price-card reveal reveal-d3" data-name="Gói 14 Ngày" data-price="25.000đ" tabindex="0">
+          <div class="price-card-tag">NODE // 14D</div>
+          <div class="plan-live"><span class="live-dot-sm"></span> Còn hàng</div><div class="plan-name">Trải nghiệm sâu</div>
+          <div class="plan-duration">14 Ngày</div>
+          <div class="plan-price"><span class="num">25.000</span><span class="unit">đ / 14 ngày</span></div>
+          <ul class="plan-features">
+            <li><span class="check">✓</span> Xem 4K HDR không giới hạn</li>
+            <li><span class="check">✓</span> Dùng trên TV, điện thoại, laptop</li>
+            <li><span class="check">✓</span> Bảo hành toàn thời gian gói</li>
+            <li><span class="check">✓</span> Hỗ trợ ưu tiên 24/7</li>
+            <li><span class="check">✓</span> Tối ưu chi phí nhất</li>
+          </ul>
+          <button class="plan-btn ripple-el">Chọn Gói Này</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ WHY ============ -->
+  <section id="why">
+    <div class="container">
+      <div class="head reveal">
+        <span class="eyebrow">// Buồng phân tích</span>
+        <h2 class="title">Vì Sao Nên <i>Chọn Chúng Tôi</i></h2>
+        <p class="desc">Dữ liệu thực tế từ hệ thống vận hành — được xử lý và hiển thị dưới dạng hologram.</p>
+      </div>
+      <div class="chamber-wrap">
+        <div class="chamber-core reveal">
+          <div class="chamber-ring r1"></div>
+          <div class="chamber-ring r2"></div>
+          <div class="chamber-center">TRUST<br>ENGINE</div>
+          <div class="data-block d1">UPTIME 99.9%</div>
+          <div class="data-block d2">4.9 ★ RATING</div>
+          <div class="data-block d3">12K+ USERS</div>
+          <div class="data-block d4">24/7 SUPPORT</div>
+        </div>
+        <div class="chamber-list">
+          <div class="chamber-item reveal reveal-d1"><div class="chamber-num">01</div><div><h4>Nguồn tài khoản chính chủ</h4><p>Không dùng tài khoản chia sẻ trôi nổi — mỗi tài khoản được kiểm tra và bảo hành riêng.</p></div></div>
+          <div class="chamber-item reveal reveal-d2"><div class="chamber-num">02</div><div><h4>Xử lý sự cố dưới 5 phút</h4><p>Đội ngũ trực Zalo liên tục, phản hồi và xử lý gần như tức thì trong khung giờ hỗ trợ.</p></div></div>
+          <div class="chamber-item reveal reveal-d3"><div class="chamber-num">03</div><div><h4>Chi phí tối ưu theo thời lượng</h4><p>Ba mốc gói 7 / 14 / 30 ngày giúp bạn trả đúng số tiền cho nhu cầu thực tế của mình.</p></div></div>
+          <div class="chamber-item reveal reveal-d4"><div class="chamber-num">04</div><div><h4>Minh bạch, không phụ phí ẩn</h4><p>Giá niêm yết là giá cuối cùng, không phát sinh thêm chi phí sau khi kích hoạt.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section id="features">
+    <div class="hud-floor"></div>
+    <div class="container">
+      <div class="head reveal">
+        <span class="eyebrow">// Hệ thống tính năng</span>
+        <h2 class="title">Bảng Điều Khiển <i>Trải Nghiệm</i></h2>
+        <p class="desc">Mỗi tính năng là một module hiển thị riêng — kéo chuột qua để kích hoạt quét dữ liệu.</p>
+      </div>
+      <div class="hud-grid">
+        <div class="hud-panel reveal reveal-d1"><div class="hud-scan"></div><div class="hud-corner"></div><div class="hud-corner br"></div><div class="hud-id">MODULE // 01</div><div class="hud-icon corner-cut-sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="12.5" rx="1.4"/><path d="M8 20.5h8M12 17v3.5"/><circle cx="16.6" cy="9" r="1.15" fill="currentColor" stroke="none"/></svg></div><div class="hud-title">4K HDR sắc nét</div><div class="hud-text">Hình ảnh sống động, màu sắc chân thực trên mọi thiết bị hỗ trợ độ phân giải cao.</div></div>
+        <div class="hud-panel reveal reveal-d2"><div class="hud-scan"></div><div class="hud-corner"></div><div class="hud-corner br"></div><div class="hud-id">MODULE // 02</div><div class="hud-icon corner-cut-sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor" stroke="none"><path d="M13.2 2 4.5 13.6h5.3l-1.6 8.4L18.9 10h-5.4z"/></svg></div><div class="hud-title">Kích hoạt tức thì</div><div class="hud-text">Nhận tài khoản và sử dụng ngay sau khi hoàn tất thanh toán, không cần chờ đợi.</div></div>
+        <div class="hud-panel reveal reveal-d3"><div class="hud-scan"></div><div class="hud-corner"></div><div class="hud-corner br"></div><div class="hud-id">MODULE // 03</div><div class="hud-icon corner-cut-sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="10.5" width="15" height="10" rx="1.6"/><path d="M7.5 10.5V7a4.5 4.5 0 0 1 9 0v3.5"/><circle cx="12" cy="15" r="1.3" fill="currentColor" stroke="none"/></svg></div><div class="hud-title">Bảo mật tài khoản</div><div class="hud-text">Tài khoản chính chủ, cam kết bảo hành trong toàn bộ thời gian sử dụng gói.</div></div>
+        <div class="hud-panel reveal reveal-d1"><div class="hud-scan"></div><div class="hud-corner"></div><div class="hud-corner br"></div><div class="hud-id">MODULE // 04</div><div class="hud-icon corner-cut-sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="13" height="9" rx="1.2"/><path d="M4 19h9"/><rect x="16.5" y="9" width="6" height="11" rx="1.2"/><path d="M19.5 17.2v.1" stroke-width="2"/></svg></div><div class="hud-title">Đa nền tảng</div><div class="hud-text">Xem mượt mà trên Smart TV, điện thoại, máy tính bảng và trình duyệt web.</div></div>
+        <div class="hud-panel reveal reveal-d2"><div class="hud-scan"></div><div class="hud-corner"></div><div class="hud-corner br"></div><div class="hud-id">MODULE // 05</div><div class="hud-icon corner-cut-sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16a1 1 0 0 1 1 1V15a1 1 0 0 1-1 1H10l-4.5 4V16H4a1 1 0 0 1-1-1V6.5a1 1 0 0 1 1-1Z"/><path d="M7 9.5h10M7 12.5h6"/></svg></div><div class="hud-title">Hỗ trợ 24/7</div><div class="hud-text">Đội ngũ hỗ trợ phản hồi nhanh qua Zalo, xử lý mọi sự cố trong vài phút.</div></div>
+        <div class="hud-panel reveal reveal-d3"><div class="hud-scan"></div><div class="hud-corner"></div><div class="hud-corner br"></div><div class="hud-id">MODULE // 06</div><div class="hud-icon corner-cut-sm"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5v19M17 6.8c0-1.8-2-2.8-5-2.8s-5 1.1-5 2.6c0 3.6 10 1.6 10 5.6 0 1.7-2 2.8-5 2.8s-5-1.1-5-2.9"/></svg></div><div class="hud-title">Giá tốt nhất</div><div class="hud-text">Mức giá cạnh tranh, nhiều gói linh hoạt phù hợp với mọi nhu cầu sử dụng.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SHOWROOM ============ -->
+  <section id="showroom">
+    <div class="showroom-floor"></div>
+    <div class="container">
+      <div class="head reveal">
+        <span class="eyebrow">// Phòng trưng bày</span>
+        <h2 class="title">Những Gì Bạn <i>Nhận Được</i></h2>
+        <p class="desc">Từng hạng mục dịch vụ được đặt trên bệ trưng bày riêng — di chuột để xoay khối 3D.</p>
+      </div>
+      <div class="showroom-grid">
+        <div class="pod reveal reveal-d1"><div class="pod-platform"><div class="pod-ring"></div><div class="pod-obj glass"><div class="glass-rim"></div><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="1.6"/><circle cx="6.3" cy="8.4" r=".6" fill="#fff" stroke="none"/><circle cx="6.3" cy="15.6" r=".6" fill="#fff" stroke="none"/><circle cx="17.7" cy="8.4" r=".6" fill="#fff" stroke="none"/><circle cx="17.7" cy="15.6" r=".6" fill="#fff" stroke="none"/><circle cx="12" cy="12" r="3.3"/></svg></div></div><div class="pod-name">4K Ultra HD</div><div class="pod-desc">Hình ảnh sắc nét vượt trội trên màn hình lớn.</div><span class="pod-tag">VIDEO</span></div>
+        <div class="pod reveal reveal-d2"><div class="pod-platform"><div class="pod-ring"></div><div class="pod-obj glass"><div class="glass-rim"></div><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 8v8l6-4-6-4Z" fill="#fff" stroke="none"/><path d="M4.5 9a10 10 0 0 0 0 6M19.5 9a10 10 0 0 1 0 6M2 6a14 14 0 0 0 0 12M22 6a14 14 0 0 1 0 12"/></svg></div></div><div class="pod-name">Dolby Atmos</div><div class="pod-desc">Âm thanh vòm sống động như rạp chiếu phim.</div><span class="pod-tag">AUDIO</span></div>
+        <div class="pod reveal reveal-d3"><div class="pod-platform"><div class="pod-ring"></div><div class="pod-obj glass"><div class="glass-rim"></div><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4.5" width="13" height="9.5" rx="1.2"/><path d="M5 18h7"/><rect x="16.5" y="8" width="6" height="11" rx="1.2"/><path d="M19.5 16.2v.1" stroke-width="2.2"/></svg></div></div><div class="pod-name">Đa thiết bị</div><div class="pod-desc">TV, điện thoại, laptop, tablet — dùng song song.</div><span class="pod-tag">DEVICE</span></div>
+        <div class="pod reveal reveal-d4"><div class="pod-platform"><div class="pod-ring"></div><div class="pod-obj glass"><div class="glass-rim"></div><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8.2" r="3.4"/><path d="M4.8 20c1-3.6 3.9-5.6 7.2-5.6s6.2 2 7.2 5.6"/></svg></div></div><div class="pod-name">Hồ sơ riêng</div><div class="pod-desc">Không gian xem cá nhân, gợi ý riêng cho bạn.</div><span class="pod-tag">PROFILE</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ TESTIMONIALS ============ -->
+  <section id="testimonials">
+    <div class="container">
+      <div class="head reveal">
+        <span class="eyebrow">// Tín hiệu phản hồi</span>
+        <h2 class="title">Khách Hàng <i>Nói Gì</i></h2>
+        <p class="desc">Những tin nhắn thật từ khách hàng đã sử dụng dịch vụ.</p>
+      </div>
+      <div class="signal-grid">
+        <div class="signal-msg reveal reveal-d1"><div class="signal-quote">&#8220;</div><div class="signal-head"><div class="signal-avatar">M</div><div><div class="signal-name">Minh Anh</div><div class="signal-stars">★★★★★</div></div></div><p class="signal-text">Đặt gói 30 ngày lúc tối muộn mà vẫn được kích hoạt trong vài phút, hình ảnh nét căng luôn.</p></div>
+        <div class="signal-msg reveal reveal-d2"><div class="signal-quote">&#8220;</div><div class="signal-head"><div class="signal-avatar">H</div><div><div class="signal-name">Huy Trần</div><div class="signal-stars">★★★★★</div></div></div><p class="signal-text">Giá rẻ hơn hẳn so với chỗ khác mà tài khoản dùng ổn định, chưa bị văng lần nào.</p></div>
+        <div class="signal-msg reveal reveal-d3"><div class="signal-quote">&#8220;</div><div class="signal-head"><div class="signal-avatar">T</div><div><div class="signal-name">Thu Trang</div><div class="signal-stars">★★★★★</div></div></div><p class="signal-text">Nhắn Zalo hỏi thử thôi mà bên shop tư vấn nhiệt tình, chốt gói xong dùng luôn không chờ lâu.</p></div>
+        <div class="signal-msg reveal reveal-d1"><div class="signal-quote">&#8220;</div><div class="signal-head"><div class="signal-avatar">K</div><div><div class="signal-name">Khánh Duy</div><div class="signal-stars">★★★★★</div></div></div><p class="signal-text">Dùng gói 14 ngày để test trước, thấy ổn nên mua tiếp gói tháng luôn cho cả nhà xem chung.</p></div>
+        <div class="signal-msg reveal reveal-d2"><div class="signal-quote">&#8220;</div><div class="signal-head"><div class="signal-avatar">L</div><div><div class="signal-name">Lan Phương</div><div class="signal-stars">★★★★★</div></div></div><p class="signal-text">Có lần quên mật khẩu, nhắn Zalo là được hỗ trợ lấy lại ngay, không mất phí phát sinh.</p></div>
+        <div class="signal-msg reveal reveal-d3"><div class="signal-quote">&#8220;</div><div class="signal-head"><div class="signal-avatar">Đ</div><div><div class="signal-name">Đức Anh</div><div class="signal-stars">★★★★★</div></div></div><p class="signal-text">Xem trên Smart TV mượt, âm thanh Dolby Atmos nghe đã tai hơn hẳn tài khoản thường.</p></div>
+      </div>
+    </div>
+    <div class="diagonal-seam" style="bottom:-1px;">
+      <svg viewBox="0 0 1200 110" preserveAspectRatio="none">
+        <polygon class="seam-fill" points="0,110 1200,110 1200,90 0,40"/>
+        <line class="seam-line" x1="0" y1="40" x2="1200" y2="90"/>
+      </svg>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-scan"></div>
+    <svg class="circuit-art" style="right:-1%;top:6%;width:280px;height:220px;transform:scaleX(-1);" viewBox="0 0 340 280" aria-hidden="true">
+      <path d="M10 270 L70 210 L70 150 L120 100 L120 60 L170 10"/>
+      <path class="trace-glow" d="M10 270 L70 210 L70 150 L120 100 L120 60 L170 10" style="animation-delay:-2.5s;"/>
+      <circle cx="70" cy="210" r="3"/><circle cx="120" cy="100" r="3"/>
+    </svg>
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="nav-logo">NETFLIX<span>.</span>PREMIUM</div>
+          <p>Cung cấp tài khoản Netflix Premium chính chủ, chất lượng 4K HDR, giá tốt và hỗ trợ tận tâm 24/7.</p>
+          <div class="footer-social"><a href="https://zalo.me/0818105658" target="_blank" rel="noopener">Z</a><a href="#">f</a><a href="#">in</a></div>
+        </div>
+        <div class="footer-col"><h5>Điều hướng</h5><ul><li><a href="#hero">Trang chủ</a></li><li><a href="#features">Tính năng</a></li><li><a href="#pricing">Bảng giá</a></li></ul></div>
+        <div class="footer-col"><h5>Dịch vụ</h5><ul><li><a href="#pricing">Gói 7 ngày</a></li><li><a href="#pricing">Gói 14 ngày</a></li><li><a href="#pricing">Gói 30 ngày</a></li></ul></div>
+        <div class="footer-col"><h5>Liên hệ</h5><ul><li><a href="https://zalo.me/0818105658" target="_blank" rel="noopener">Zalo: 0818 105 658</a></li><li><a href="https://zalo.me/0818105658" target="_blank" rel="noopener">Hỗ trợ 24/7 qua Zalo</a></li></ul></div>
+      </div>
+      <div class="footer-bottom"><span>© 2026 Netflix Premium Store. Tất cả các quyền được bảo lưu.</span><span>Thiết kế Cinematic · Black &amp; Red · Premium</span></div>
+    </div>
+  </footer>
+
+</div><!-- /.page-content -->
+
+<div id="popup-overlay">
+  <div class="popup-box">
+    <button class="popup-close" id="popup-close">✕</button>
+    <div class="popup-icon">🎬</div>
+    <div class="popup-title">Bạn đã chọn</div>
+    <div class="popup-plan-name" id="popup-plan-name">Gói 14 Ngày</div>
+    <div class="popup-plan-price" id="popup-plan-price">25.000đ</div>
+    <div class="popup-divider"></div>
+    <div class="popup-contact-label">Liên hệ đặt mua</div>
+    <div class="popup-phone-row">
+      <span class="phone-num">0818 105 658</span>
+      <button class="copy-btn ripple-el" id="popup-copy-btn" data-phone="0818105658">📋 Copy</button>
+    </div>
+    <a href="https://zalo.me/0818105658" target="_blank" rel="noopener" class="zalo-btn ripple-el" id="popup-zalo-btn">💬 Nhắn Zalo</a>
+    <div class="popup-note">Phản hồi trong vòng 5 phút · Hỗ trợ 8:00 — 22:00</div>
+  </div>
+</div>
+
+<div id="toast"><span class="dot2">●</span> <span id="toast-text">Đã copy số điện thoại</span></div>
+
+<div id="music-widget">
+  <div id="music-panel">
+    <div id="music-panel-head">// NHẠC NỀN ĐANG PHÁT</div>
+    <iframe id="spotify-frame" style="border-radius:0;" data-src="https://open.spotify.com/embed/track/5mhEfIApJGYndNL9DFQ8Gs?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+  </div>
+  <button id="music-toggle" aria-label="Bật/tắt nhạc nền"><span class="eq"><span></span><span></span><span></span></span></button>
+</div>
+
+<button id="back-to-top">↑</button>
+
+<script>
+(function () {
+  /* 1. LOADING SCREEN */
+  const loadingScreen = document.getElementById('loading-screen');
+  const loaderFill = document.getElementById('loader-fill');
+  const loaderPercent = document.getElementById('loader-percent');
+  let progress = 0;
+  const loadInterval = setInterval(() => {
+    progress += Math.random() * 18 + 6;
+    if (progress >= 100) {
+      progress = 100;
+      clearInterval(loadInterval);
+      setTimeout(() => {
+        loadingScreen.classList.add('hidden');
+        startTypedTitle();
+        armAudioUnlock();
+        setTimeout(() => { loadingScreen.style.display = 'none'; }, 1300);
+      }, 350);
+    }
+    loaderFill.style.width = progress + '%';
+    loaderPercent.textContent = Math.floor(progress) + '%';
+  }, 160);
+
+  /* 2. TYPED TITLE */
+  function startTypedTitle() {
+    const el = document.getElementById('typed-text');
+    const text = 'NETFLIX PREMIUM';
+    let i = 0;
+    function type() {
+      if (i <= text.length) { el.textContent = text.slice(0, i); i++; setTimeout(type, 45); }
+    }
+    type();
+  }
+
+  /* 3. NAVBAR SCROLL STATE */
+  const navbar = document.getElementById('navbar');
+  const navLinks = document.getElementById('nav-links');
+  const navToggle = document.getElementById('nav-toggle');
+  window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 40); }, { passive: true });
+  navToggle.addEventListener('click', () => { navToggle.classList.toggle('active'); navLinks.classList.toggle('active'); });
+  navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => { navToggle.classList.remove('active'); navLinks.classList.remove('active'); }));
+
+  /* 4. BACK TO TOP */
+  const backToTop = document.getElementById('back-to-top');
+  window.addEventListener('scroll', () => { backToTop.classList.toggle('show', window.scrollY > 700); }, { passive: true });
+  backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+  /* 4b. MUSIC WIDGET — self-generated cinematic ambient score, auto-plays on first interaction */
+  const musicWidget = document.getElementById('music-widget');
+  const musicToggle = document.getElementById('music-toggle');
+  const spotifyFrame = document.getElementById('spotify-frame');
+  const soundHint = document.getElementById('sound-hint');
+  let musicStarted = false;
+
+  function startMusic() {
+    if (musicStarted || !spotifyFrame) return;
+    musicStarted = true;
+    const base = spotifyFrame.getAttribute('data-src');
+    spotifyFrame.src = base + '&autoplay=1';
+    musicWidget.classList.add('playing');
+  }
+
+  function armAudioUnlock() {
+    if (soundHint) { soundHint.classList.add('show'); setTimeout(() => soundHint.classList.remove('show'), 9000); }
+    const unlock = () => {
+      startMusic();
+      if (soundHint) soundHint.classList.remove('show');
+      ['pointerdown', 'keydown', 'touchstart'].forEach((ev) => document.removeEventListener(ev, unlock));
+    };
+    ['pointerdown', 'keydown', 'touchstart'].forEach((ev) => document.addEventListener(ev, unlock, { once: true }));
+  }
+  window.armAudioUnlock = armAudioUnlock;
+
+  musicToggle.addEventListener('click', () => {
+    startMusic();
+    musicWidget.classList.toggle('open');
+  });
+  document.addEventListener('click', (e) => {
+    if (musicWidget.classList.contains('open') && !musicWidget.contains(e.target)) musicWidget.classList.remove('open');
+  });
+
+  /* 5. THE REEL — scroll progress indicator */
+  const reelFill = document.getElementById('reel-fill');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    reelFill.style.height = pct + '%';
+  }, { passive: true });
+
+  /* 6. CURSOR GLOW + TRAIL */
+  const cursorGlow = document.getElementById('cursor-glow');
+  let lastTrail = 0;
+  window.addEventListener('mousemove', (e) => {
+    cursorGlow.style.left = e.clientX + 'px';
+    cursorGlow.style.top = e.clientY + 'px';
+    const now = Date.now();
+    if (now - lastTrail > 40) {
+      lastTrail = now;
+      const dot = document.createElement('div');
+      dot.className = 'trail-dot';
+      dot.style.left = e.clientX + 'px';
+      dot.style.top = e.clientY + 'px';
+      document.body.appendChild(dot);
+      setTimeout(() => dot.remove(), 600);
+    }
+  });
+
+  /* 6b. CURSOR RING — smooth lag follow + hover scale */
+  const cursorRing = document.getElementById('cursor-ring');
+  let ringX = window.innerWidth / 2, ringY = window.innerHeight / 2, mouseX = ringX, mouseY = ringY;
+  window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+  (function ringLoop() {
+    ringX += (mouseX - ringX) * 0.18; ringY += (mouseY - ringY) * 0.18;
+    if (cursorRing) { cursorRing.style.left = ringX + 'px'; cursorRing.style.top = ringY + 'px'; }
+    requestAnimationFrame(ringLoop);
+  })();
+  const hoverables = 'a, button, .price-card, .hud-panel, .pod, .signal-msg, .plan-btn, .dyn-island, .hero-tag, .glass';
+  document.addEventListener('mouseover', (e) => { if (cursorRing && e.target.closest(hoverables)) cursorRing.classList.add('hover'); });
+  document.addEventListener('mouseout', (e) => { if (cursorRing && e.target.closest(hoverables)) cursorRing.classList.remove('hover'); });
+
+  /* 6c. SCENE COLOR-GRADE — ambient tint shifts as the camera moves through each act */
+  const sceneTint = document.getElementById('scene-tint');
+  const sceneGrades = {
+    hero: 'radial-gradient(ellipse 80% 55% at 50% 25%, rgba(229,9,20,.14), transparent 70%)',
+    pricing: 'radial-gradient(ellipse 90% 60% at 50% 10%, rgba(229,9,20,.20), transparent 72%)',
+    why: 'radial-gradient(ellipse 70% 70% at 50% 50%, rgba(229,9,20,.16), transparent 75%)',
+    features: 'radial-gradient(ellipse 90% 70% at 50% 0%, rgba(229,9,20,.12), transparent 74%)',
+    showroom: 'radial-gradient(ellipse 90% 80% at 50% 100%, rgba(229,9,20,.15), transparent 76%)',
+    testimonials: 'radial-gradient(ellipse 90% 70% at 50% 0%, rgba(229,9,20,.10), transparent 74%)'
+  };
+  if (sceneTint) {
+    const dotLinks = document.querySelectorAll('#dot-nav a');
+    const sceneObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && sceneGrades[entry.target.id]) {
+          sceneTint.style.background = sceneGrades[entry.target.id];
+          dotLinks.forEach((d) => d.classList.toggle('active', d.getAttribute('href') === '#' + entry.target.id));
+        }
+      });
+    }, { threshold: 0.45 });
+    Object.keys(sceneGrades).forEach((id) => { const s = document.getElementById(id); if (s) sceneObserver.observe(s); });
+  }
+
+  /* 6d. CARD GLARE — glass reflection follows the cursor per card */
+  document.querySelectorAll('.price-card, .hud-panel, .pod, .signal-msg, .popup-box, #music-panel, #navbar').forEach((el) => {
+    el.addEventListener('mousemove', (e) => {
+      const r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    });
+  });
+
+  /* 6e. EMBER PARTICLES — rising sparks from the featured plan */
+  const emberHost = document.getElementById('ember-best');
+  if (emberHost) {
+    setInterval(() => {
+      const ember = document.createElement('span');
+      ember.className = 'ember';
+      ember.style.left = (8 + Math.random() * 84) + '%';
+      ember.style.setProperty('--dx', (Math.random() * 40 - 20) + 'px');
+      ember.style.animationDuration = (3 + Math.random() * 2.4) + 's';
+      emberHost.appendChild(ember);
+      setTimeout(() => ember.remove(), 5600);
+    }, 550);
+  }
+
+  /* 7. PARTICLE CANVAS */
+  const canvas = document.getElementById('particle-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  function initParticles() {
+    particles = [];
+    const count = window.innerWidth < 768 ? 30 : 60;
+    for (let i = 0; i < count; i++) {
+      particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, r: Math.random() * 1.6 + 0.4, vx: (Math.random() - 0.5) * 0.15, vy: (Math.random() - 0.5) * 0.15, o: Math.random() * 0.5 + 0.1 });
+    }
+  }
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach((p) => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+      if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(229,9,20,${p.o})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(animateParticles);
+  }
+  resizeCanvas(); initParticles(); animateParticles();
+  window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
+
+  /* 8. HERO DUST PARTICLES (DOM) */
+  const dustWrap = document.getElementById('hero-dust');
+  for (let i = 0; i < 22; i++) {
+    const d = document.createElement('span');
+    d.className = 'dust';
+    d.style.left = Math.random() * 100 + '%';
+    d.style.bottom = '-10px';
+    d.style.animationDuration = (8 + Math.random() * 10) + 's';
+    d.style.animationDelay = (Math.random() * 10) + 's';
+    dustWrap.appendChild(d);
+  }
+
+  /* 9. LAPTOP RIG — mouse parallax tilt (the signature element) */
+  const rig = document.getElementById('laptop-rig');
+  const laptop3d = document.getElementById('laptop3d');
+  if (rig && window.matchMedia('(min-width: 900px)').matches) {
+    rig.addEventListener('mousemove', (e) => {
+      const rect = rig.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      laptop3d.style.setProperty('--ry', (-18 + x * 26) + 'deg');
+      laptop3d.style.setProperty('--rx', (10 - y * 16) + 'deg');
+    });
+    rig.addEventListener('mouseleave', () => { laptop3d.style.setProperty('--ry', '-18deg'); laptop3d.style.setProperty('--rx', '10deg'); });
+  }
+  window.addEventListener('scroll', () => {
+    const rect = rig.getBoundingClientRect();
+    const progress = Math.min(Math.max(1 - (rect.top / window.innerHeight), 0), 1);
+    rig.style.transform = `translateY(${progress * -30}px) rotateZ(${progress * 3}deg)`;
+    rig.style.opacity = 1 - progress * 0.5;
+  }, { passive: true });
+
+  /* 10. ANIMATED COUNTERS */
+  function animateCounters() {
+    document.querySelectorAll('.counter').forEach((counter) => {
+      const target = parseInt(counter.getAttribute('data-target'), 10);
+      const duration = 1800;
+      const startTime = performance.now();
+      function updateCounter(now) {
+        const elapsed = now - startTime;
+        const progressRatio = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progressRatio, 3);
+        counter.textContent = Math.floor(eased * target).toLocaleString('vi-VN');
+        if (progressRatio < 1) requestAnimationFrame(updateCounter);
+        else counter.textContent = target.toLocaleString('vi-VN');
+      }
+      requestAnimationFrame(updateCounter);
+    });
+  }
+
+  /* 11. SCROLL REVEAL */
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) { entry.target.classList.add('in-view'); revealObserver.unobserve(entry.target); }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach((el) => revealObserver.observe(el));
+
+  const heroCounterWrap = document.querySelector('.hero-counters');
+  if (heroCounterWrap) {
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => { if (entry.isIntersecting) { animateCounters(); counterObserver.disconnect(); } });
+    }, { threshold: 0.3 });
+    counterObserver.observe(heroCounterWrap);
+  }
+
+  /* 12. MAGNETIC BUTTON */
+  if (window.matchMedia('(min-width: 1025px)').matches) {
+    document.querySelectorAll('.btn-primary, .zalo-btn, .nav-cta, .plan-btn, .copy-btn').forEach((btn) => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        btn.style.transform = `translate(${x * 0.14}px, ${y * 0.24}px)`;
+      });
+      btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+    });
+  }
+
+  /* 13. TILT 3D — premium hover interaction across every card in every module */
+  function tiltify(selector, maxTilt, lift) {
+    document.querySelectorAll(selector).forEach((card) => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left, y = e.clientY - rect.top;
+        const centerX = rect.width / 2, centerY = rect.height / 2;
+        const rotateX = ((y - centerY) / centerY) * -maxTilt;
+        const rotateY = ((x - centerX) / centerX) * maxTilt;
+        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(${lift}px)`;
+      });
+      card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+    });
+  }
+  if (window.matchMedia('(min-width: 900px)').matches) {
+    tiltify('.price-card', 6, -8);
+    tiltify('.hud-panel', 4, -10);
+    tiltify('.pod', 5, -8);
+    tiltify('.signal-msg', 3, -6);
+  }
+
+  /* 13b. TEXT SCRAMBLE / DECODE — HUD-style title reveal on scroll-in */
+  const scrambleChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$%&';
+  function scrambleReveal(el) {
+    const finalHTML = el.innerHTML;
+    const plain = el.textContent;
+    if (!plain.trim()) return;
+    let frame = 0;
+    const totalFrames = 18;
+    const chars = plain.split('');
+    const timer = setInterval(() => {
+      frame++;
+      const lockedCount = Math.floor((frame / totalFrames) * chars.length);
+      el.textContent = chars.map((ch, i) => {
+        if (ch === ' ') return ' ';
+        if (i < lockedCount) return ch;
+        return scrambleChars[Math.floor(Math.random() * scrambleChars.length)];
+      }).join('');
+      if (frame >= totalFrames) { clearInterval(timer); el.innerHTML = finalHTML; }
+    }, 34);
+  }
+  const scrambleObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) { scrambleReveal(entry.target); scrambleObserver.unobserve(entry.target); }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll('.title').forEach((el) => scrambleObserver.observe(el));
+
+  /* 13c. AUTO SIGNAL SCAN — testimonial cards periodically flash a transmission scanline on their own */
+  document.querySelectorAll('.signal-msg').forEach((card, i) => {
+    setInterval(() => {
+      card.classList.add('auto-scan');
+      setTimeout(() => card.classList.remove('auto-scan'), 900);
+    }, 4200 + i * 650);
+  });
+
+  /* 15. POPUP */
+  const popupOverlay = document.getElementById('popup-overlay');
+  const popupPlanName = document.getElementById('popup-plan-name');
+  const popupPlanPrice = document.getElementById('popup-plan-price');
+  const popupClose = document.getElementById('popup-close');
+  const priceCards = document.querySelectorAll('.price-card');
+  function openPopup(name, price) {
+    popupPlanName.textContent = name; popupPlanPrice.textContent = price;
+    popupOverlay.classList.add('active'); document.body.style.overflow = 'hidden';
+  }
+  function closePopup() { popupOverlay.classList.remove('active'); document.body.style.overflow = ''; }
+  priceCards.forEach((card) => {
+    card.addEventListener('click', () => openPopup(card.getAttribute('data-name'), card.getAttribute('data-price')));
+    card.addEventListener('keypress', (e) => { if (e.key === 'Enter') openPopup(card.getAttribute('data-name'), card.getAttribute('data-price')); });
+  });
+  popupClose.addEventListener('click', closePopup);
+  popupOverlay.addEventListener('click', (e) => { if (e.target === popupOverlay) closePopup(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePopup(); });
+
+  /* 16. COPY PHONE + TOAST */
+  const toast = document.getElementById('toast');
+  const toastText = document.getElementById('toast-text');
+  function showToast(message) { toastText.textContent = message; toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 2200); }
+  function copyPhoneNumber(phone, btn) {
+    const finish = () => {
+      showToast('Đã copy số điện thoại: ' + phone);
+      if (btn) {
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '✅ Đã copy'; btn.classList.add('copied');
+        setTimeout(() => { btn.innerHTML = originalHTML; btn.classList.remove('copied'); }, 1800);
+      }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(phone).then(finish).catch(() => fallbackCopy(phone, finish));
+    else fallbackCopy(phone, finish);
+  }
+  function fallbackCopy(text, callback) {
+    const textarea = document.createElement('textarea');
+    textarea.value = text; textarea.style.position = 'fixed'; textarea.style.opacity = '0';
+    document.body.appendChild(textarea); textarea.select();
+    try { document.execCommand('copy'); } catch (err) {}
+    document.body.removeChild(textarea);
+    callback();
+  }
+  document.getElementById('popup-copy-btn').addEventListener('click', function () { copyPhoneNumber(this.getAttribute('data-phone'), this); });
+
+  /* 17. CAMERA TILT — the whole page subtly skews with scroll velocity, like a living camera */
+  const pageContent = document.querySelector('.page-content');
+  if (pageContent && window.matchMedia('(min-width: 900px)').matches) {
+    let lastY = window.scrollY, tilt = 0;
+    (function tiltLoop() {
+      const currentY = window.scrollY;
+      const velocity = currentY - lastY;
+      lastY = currentY;
+      tilt += (velocity * 0.045 - tilt) * 0.12;
+      const clamped = Math.max(-1.4, Math.min(1.4, tilt));
+      pageContent.style.transform = `skewY(${clamped}deg)`;
+      requestAnimationFrame(tiltLoop);
+    })();
+  }
+
+  /* 18. HERO LAYERED PARALLAX — grid, dust and beam drift at different depths while scrolling */
+  const heroSection = document.getElementById('hero');
+  const heroGrid = document.querySelector('.hero-grid-pattern');
+  const heroBeamEl = document.querySelector('.hero-beam');
+  const heroDustEl = document.getElementById('hero-dust');
+  if (heroSection) {
+    window.addEventListener('scroll', () => {
+      const rect = heroSection.getBoundingClientRect();
+      const p = Math.min(Math.max(-rect.top / window.innerHeight, 0), 1);
+      if (heroGrid) heroGrid.style.transform = `translateY(${p * 60}px)`;
+      if (heroBeamEl) heroBeamEl.style.transform = `translateY(${p * -80}px) rotate(14deg)`;
+      if (heroDustEl) heroDustEl.style.transform = `translateY(${p * 40}px)`;
+    }, { passive: true });
+  }
+
+})();
+</script>
+</body>
+</html>
