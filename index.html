@@ -33,8 +33,9 @@
   --glow-red: 0 0 18px rgba(229,9,20,.55), 0 0 46px rgba(229,9,20,.25);
 }
 
-html{ scroll-behavior:smooth; background:var(--black); }
-body{ font-family:var(--font-b); background:var(--black); color:var(--white); overflow-x:hidden; line-height:1.6; }
+html{ scroll-behavior:smooth; background:var(--black); overflow-x:hidden; max-width:100%; }
+html.is-loading, html.is-loading body{ overflow:hidden !important; height:100%; }
+body{ font-family:var(--font-b); background:var(--black); color:var(--white); overflow-x:hidden; max-width:100%; line-height:1.6; position:relative; }
 ::selection{ background:var(--red); color:#fff; }
 ::-webkit-scrollbar{ width:8px; }
 ::-webkit-scrollbar-track{ background:#000; }
@@ -86,7 +87,7 @@ section + section{ margin-top:-1px; }
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   background-repeat:repeat; }
 #particle-canvas{ position:fixed; inset:0; z-index:0; pointer-events:none; }
-#cursor-glow{ position:fixed; width:440px; height:440px; border-radius:50%; pointer-events:none; z-index:1; background:radial-gradient(circle, rgba(229,9,20,.15) 0%, rgba(229,9,20,.04) 40%, transparent 70%); transform:translate(-50%,-50%); transition:opacity .3s ease; will-change:left,top; }
+#cursor-glow{ position:fixed; width:440px; height:440px; border-radius:50%; pointer-events:none; z-index:1; background:radial-gradient(circle, rgba(229,9,20,.15) 0%, rgba(229,9,20,.04) 40%, transparent 70%); transform:translate(-50%,-50%); transition:opacity .3s ease; will-change:transform; }
 #ambient-wash{ position:fixed; inset:0; z-index:0; pointer-events:none;
   background:
     radial-gradient(ellipse 60% 45% at 50% 0%, rgba(229,9,20,.05), transparent 70%),
@@ -889,7 +890,36 @@ footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180de
 
 <script>
 (function () {
-  /* 1. LOADING SCREEN */
+  /* 0. PERF: gộp mọi listener 'scroll' thành 1 listener duy nhất, batch qua requestAnimationFrame.
+     Trước đây có 5 listener scroll riêng lẻ, mỗi cái tự đọc/ghi DOM -> gây "layout thrashing"
+     (trình duyệt phải tính lại layout nhiều lần trong cùng 1 khung hình). Giờ chỉ đọc/ghi 1 lần/frame. */
+  const __scrollTasks = [];
+  let __scrollTicking = false;
+  function onScrollTask(fn) { __scrollTasks.push(fn); }
+  window.addEventListener('scroll', () => {
+    if (!__scrollTicking) {
+      __scrollTicking = true;
+      requestAnimationFrame(() => {
+        for (let i = 0; i < __scrollTasks.length; i++) __scrollTasks[i]();
+        __scrollTicking = false;
+      });
+    }
+  }, { passive: true });
+
+  /* 1. LOADING SCREEN
+     PERF FIX: khoá cuộn trang trong lúc màn hình loading còn hiển thị. Trước đây nếu người dùng
+     vuốt rất nhanh ngay lúc vừa mở trang, hàng loạt hiệu ứng (blur kính, reveal card, canvas hạt...)
+     bị kích hoạt cùng lúc trong khi trang còn đang khởi tạo (font, canvas, observer...) khiến trình
+     duyệt (đặc biệt trình duyệt trong app như TikTok) quá tải và hiển thị trắng/đứng hình.
+     Khoá cuộn lúc này không ảnh hưởng gì vì màn hình loading vốn đã che kín toàn bộ trang rồi. */
+  document.documentElement.classList.add('is-loading');
+  const preventScrollDuringLoad = (e) => { e.preventDefault(); };
+  document.addEventListener('touchmove', preventScrollDuringLoad, { passive: false });
+  const unlockScroll = () => {
+    document.documentElement.classList.remove('is-loading');
+    document.removeEventListener('touchmove', preventScrollDuringLoad);
+  };
+  setTimeout(unlockScroll, 4000); // an toàn: không bao giờ khoá cuộn quá 4 giây
   const loadingScreen = document.getElementById('loading-screen');
   const loaderFill = document.getElementById('loader-fill');
   const loaderPercent = document.getElementById('loader-percent');
@@ -901,6 +931,7 @@ footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180de
       clearInterval(loadInterval);
       setTimeout(() => {
         loadingScreen.classList.add('hidden');
+        unlockScroll();
         startTypedTitle();
         armAudioUnlock();
         setTimeout(() => { loadingScreen.style.display = 'none'; }, 1300);
@@ -925,13 +956,13 @@ footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180de
   const navbar = document.getElementById('navbar');
   const navLinks = document.getElementById('nav-links');
   const navToggle = document.getElementById('nav-toggle');
-  window.addEventListener('scroll', () => { navbar.classList.toggle('scrolled', window.scrollY > 40); }, { passive: true });
+  onScrollTask(() => { navbar.classList.toggle('scrolled', window.scrollY > 40); });
   navToggle.addEventListener('click', () => { navToggle.classList.toggle('active'); navLinks.classList.toggle('active'); });
   navLinks.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => { navToggle.classList.remove('active'); navLinks.classList.remove('active'); }));
 
   /* 4. BACK TO TOP */
   const backToTop = document.getElementById('back-to-top');
-  window.addEventListener('scroll', () => { backToTop.classList.toggle('show', window.scrollY > 700); }, { passive: true });
+  onScrollTask(() => { backToTop.classList.toggle('show', window.scrollY > 700); });
   backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
   /* 4b. MUSIC WIDGET — self-generated cinematic ambient score, auto-plays on first interaction */
@@ -970,42 +1001,47 @@ footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180de
 
   /* 5. THE REEL — scroll progress indicator */
   const reelFill = document.getElementById('reel-fill');
-  window.addEventListener('scroll', () => {
+  onScrollTask(() => {
     const h = document.documentElement;
     const pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
     reelFill.style.height = pct + '%';
-  }, { passive: true });
-
-  /* 6. CURSOR GLOW + TRAIL */
-  const cursorGlow = document.getElementById('cursor-glow');
-  let lastTrail = 0;
-  window.addEventListener('mousemove', (e) => {
-    cursorGlow.style.left = e.clientX + 'px';
-    cursorGlow.style.top = e.clientY + 'px';
-    const now = Date.now();
-    if (now - lastTrail > 40) {
-      lastTrail = now;
-      const dot = document.createElement('div');
-      dot.className = 'trail-dot';
-      dot.style.left = e.clientX + 'px';
-      dot.style.top = e.clientY + 'px';
-      document.body.appendChild(dot);
-      setTimeout(() => dot.remove(), 600);
-    }
   });
 
-  /* 6b. CURSOR RING — smooth lag follow + hover scale */
+  /* 6+6b. CURSOR GLOW + TRAIL + RING
+     - Dùng transform:translate3d thay cho left/top -> chỉ tốn compositor (GPU), không ép reflow.
+     - Gộp việc cập nhật vị trí vào 1 vòng requestAnimationFrame thay vì ghi style ngay trong mỗi
+       sự kiện mousemove (mousemove có thể bắn 100+ lần/giây, giờ chỉ vẽ tối đa 60 lần/giây).
+     - Chỉ khởi tạo trên màn hình >=769px, đúng breakpoint CSS đang ẩn các phần tử này ở mobile
+       (@media max-width:768px) -> mobile đỡ tốn CPU cho hiệu ứng vốn dĩ không hiển thị. */
+  const cursorGlow = document.getElementById('cursor-glow');
   const cursorRing = document.getElementById('cursor-ring');
-  let ringX = window.innerWidth / 2, ringY = window.innerHeight / 2, mouseX = ringX, mouseY = ringY;
-  window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
-  (function ringLoop() {
-    ringX += (mouseX - ringX) * 0.18; ringY += (mouseY - ringY) * 0.18;
-    if (cursorRing) { cursorRing.style.left = ringX + 'px'; cursorRing.style.top = ringY + 'px'; }
-    requestAnimationFrame(ringLoop);
-  })();
-  const hoverables = 'a, button, .price-card, .hud-panel, .pod, .signal-msg, .plan-btn, .dyn-island, .hero-tag, .glass';
-  document.addEventListener('mouseover', (e) => { if (cursorRing && e.target.closest(hoverables)) cursorRing.classList.add('hover'); });
-  document.addEventListener('mouseout', (e) => { if (cursorRing && e.target.closest(hoverables)) cursorRing.classList.remove('hover'); });
+  if (window.matchMedia('(min-width: 769px)').matches && cursorGlow && cursorRing) {
+    let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
+    let ringX = mouseX, ringY = mouseY;
+    let lastTrail = 0;
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX; mouseY = e.clientY;
+      const now = Date.now();
+      if (now - lastTrail > 40) {
+        lastTrail = now;
+        const dot = document.createElement('div');
+        dot.className = 'trail-dot';
+        dot.style.left = e.clientX + 'px';
+        dot.style.top = e.clientY + 'px';
+        document.body.appendChild(dot);
+        setTimeout(() => dot.remove(), 600);
+      }
+    }, { passive: true });
+    (function cursorLoop() {
+      cursorGlow.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-50%,-50%)`;
+      ringX += (mouseX - ringX) * 0.18; ringY += (mouseY - ringY) * 0.18;
+      cursorRing.style.transform = `translate3d(${ringX}px, ${ringY}px, 0) translate(-50%,-50%)`;
+      requestAnimationFrame(cursorLoop);
+    })();
+    const hoverables = 'a, button, .price-card, .hud-panel, .pod, .signal-msg, .plan-btn, .dyn-island, .hero-tag, .glass';
+    document.addEventListener('mouseover', (e) => { if (e.target.closest(hoverables)) cursorRing.classList.add('hover'); });
+    document.addEventListener('mouseout', (e) => { if (e.target.closest(hoverables)) cursorRing.classList.remove('hover'); });
+  }
 
   /* 6c. SCENE COLOR-GRADE — ambient tint shifts as the camera moves through each act */
   const sceneTint = document.getElementById('scene-tint');
@@ -1030,12 +1066,23 @@ footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180de
     Object.keys(sceneGrades).forEach((id) => { const s = document.getElementById(id); if (s) sceneObserver.observe(s); });
   }
 
-  /* 6d. CARD GLARE — glass reflection follows the cursor per card */
+  /* 6d. CARD GLARE — glass reflection follows the cursor per card
+     PERF: rect được đo 1 lần khi mouseenter (thay vì mỗi mousemove) vì kích thước card không đổi
+     trong lúc hover; ghi style được gộp qua requestAnimationFrame để tránh ghi DOM dồn dập. */
   document.querySelectorAll('.price-card, .hud-panel, .pod, .signal-msg, .popup-box, #music-panel, #navbar').forEach((el) => {
+    let glareRect = null, glareTicking = false, glareEvt = null;
+    el.addEventListener('mouseenter', () => { glareRect = el.getBoundingClientRect(); });
     el.addEventListener('mousemove', (e) => {
-      const r = el.getBoundingClientRect();
-      el.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
-      el.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+      glareEvt = e;
+      if (!glareTicking) {
+        glareTicking = true;
+        requestAnimationFrame(() => {
+          if (!glareRect) glareRect = el.getBoundingClientRect();
+          el.style.setProperty('--mx', ((glareEvt.clientX - glareRect.left) / glareRect.width * 100) + '%');
+          el.style.setProperty('--my', ((glareEvt.clientY - glareRect.top) / glareRect.height * 100) + '%');
+          glareTicking = false;
+        });
+      }
     });
   });
 
@@ -1043,6 +1090,7 @@ footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180de
   const emberHost = document.getElementById('ember-best');
   if (emberHost) {
     setInterval(() => {
+      if (document.hidden) return;
       const ember = document.createElement('span');
       ember.className = 'ember';
       ember.style.left = (8 + Math.random() * 84) + '%';
@@ -1066,16 +1114,18 @@ footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180de
     }
   }
   function animateParticles() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    particles.forEach((p) => {
-      p.x += p.vx; p.y += p.vy;
-      if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
-      if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(229,9,20,${p.o})`;
-      ctx.fill();
-    });
+    if (!document.hidden) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach((p) => {
+        p.x += p.vx; p.y += p.vy;
+        if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(229,9,20,${p.o})`;
+        ctx.fill();
+      });
+    }
     requestAnimationFrame(animateParticles);
   }
   resizeCanvas(); initParticles(); animateParticles();
@@ -1096,7 +1146,8 @@ footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180de
   /* 9. LAPTOP RIG — mouse parallax tilt (the signature element) */
   const rig = document.getElementById('laptop-rig');
   const laptop3d = document.getElementById('laptop3d');
-  if (rig && window.matchMedia('(min-width: 900px)').matches) {
+  const rigIsDesktop = window.matchMedia('(min-width: 900px)').matches;
+  if (rig && rigIsDesktop) {
     rig.addEventListener('mousemove', (e) => {
       const rect = rig.getBoundingClientRect();
       const x = (e.clientX - rect.left) / rect.width - 0.5;
@@ -1106,12 +1157,18 @@ footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180de
     });
     rig.addEventListener('mouseleave', () => { laptop3d.style.setProperty('--ry', '-18deg'); laptop3d.style.setProperty('--rx', '10deg'); });
   }
-  window.addEventListener('scroll', () => {
-    const rect = rig.getBoundingClientRect();
-    const progress = Math.min(Math.max(1 - (rect.top / window.innerHeight), 0), 1);
-    rig.style.transform = `translateY(${progress * -30}px) rotateZ(${progress * 3}deg)`;
-    rig.style.opacity = 1 - progress * 0.5;
-  }, { passive: true });
+  /* PERF: hiệu ứng "trôi theo cuộn" của khối laptop 3D chỉ chạy trên desktop (>=900px).
+     Khối này chứa nhiều lớp kính mờ + xoay 3D thật cùng lúc — trên điện thoại, việc vừa cuộn
+     vừa liên tục ghi transform lên cả khối nặng này là nguyên nhân chính gây quá tải GPU /
+     crash trắng màn hình khi người dùng lướt nhanh qua đúng khu vực này. */
+  if (rig && rigIsDesktop) {
+    onScrollTask(() => {
+      const rect = rig.getBoundingClientRect();
+      const progress = Math.min(Math.max(1 - (rect.top / window.innerHeight), 0), 1);
+      rig.style.transform = `translateY(${progress * -30}px) rotateZ(${progress * 3}deg)`;
+      rig.style.opacity = 1 - progress * 0.5;
+    });
+  }
 
   /* 10. ANIMATED COUNTERS */
   function animateCounters() {
@@ -1151,11 +1208,20 @@ footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180de
   /* 12. MAGNETIC BUTTON */
   if (window.matchMedia('(min-width: 1025px)').matches) {
     document.querySelectorAll('.btn-primary, .zalo-btn, .nav-cta, .plan-btn, .copy-btn').forEach((btn) => {
+      let btnRect = null, btnTicking = false, btnEvt = null;
+      btn.addEventListener('mouseenter', () => { btnRect = btn.getBoundingClientRect(); });
       btn.addEventListener('mousemove', (e) => {
-        const rect = btn.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        btn.style.transform = `translate(${x * 0.14}px, ${y * 0.24}px)`;
+        btnEvt = e;
+        if (!btnTicking) {
+          btnTicking = true;
+          requestAnimationFrame(() => {
+            if (!btnRect) btnRect = btn.getBoundingClientRect();
+            const x = btnEvt.clientX - btnRect.left - btnRect.width / 2;
+            const y = btnEvt.clientY - btnRect.top - btnRect.height / 2;
+            btn.style.transform = `translate(${x * 0.14}px, ${y * 0.24}px)`;
+            btnTicking = false;
+          });
+        }
       });
       btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
     });
@@ -1164,13 +1230,22 @@ footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180de
   /* 13. TILT 3D — premium hover interaction across every card in every module */
   function tiltify(selector, maxTilt, lift) {
     document.querySelectorAll(selector).forEach((card) => {
+      let tiltRect = null, tiltTicking = false, tiltEvt = null;
+      card.addEventListener('mouseenter', () => { tiltRect = card.getBoundingClientRect(); });
       card.addEventListener('mousemove', (e) => {
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left, y = e.clientY - rect.top;
-        const centerX = rect.width / 2, centerY = rect.height / 2;
-        const rotateX = ((y - centerY) / centerY) * -maxTilt;
-        const rotateY = ((x - centerX) / centerX) * maxTilt;
-        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(${lift}px)`;
+        tiltEvt = e;
+        if (!tiltTicking) {
+          tiltTicking = true;
+          requestAnimationFrame(() => {
+            if (!tiltRect) tiltRect = card.getBoundingClientRect();
+            const x = tiltEvt.clientX - tiltRect.left, y = tiltEvt.clientY - tiltRect.top;
+            const centerX = tiltRect.width / 2, centerY = tiltRect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -maxTilt;
+            const rotateY = ((x - centerX) / centerX) * maxTilt;
+            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(${lift}px)`;
+            tiltTicking = false;
+          });
+        }
       });
       card.addEventListener('mouseleave', () => { card.style.transform = ''; });
     });
@@ -1282,14 +1357,14 @@ footer{ position:relative; padding:80px 0 30px; background:linear-gradient(180de
   const heroGrid = document.querySelector('.hero-grid-pattern');
   const heroBeamEl = document.querySelector('.hero-beam');
   const heroDustEl = document.getElementById('hero-dust');
-  if (heroSection) {
-    window.addEventListener('scroll', () => {
+  if (heroSection && window.matchMedia('(min-width: 900px)').matches) {
+    onScrollTask(() => {
       const rect = heroSection.getBoundingClientRect();
       const p = Math.min(Math.max(-rect.top / window.innerHeight, 0), 1);
       if (heroGrid) heroGrid.style.transform = `translateY(${p * 60}px)`;
       if (heroBeamEl) heroBeamEl.style.transform = `translateY(${p * -80}px) rotate(14deg)`;
       if (heroDustEl) heroDustEl.style.transform = `translateY(${p * 40}px)`;
-    }, { passive: true });
+    });
   }
 
 })();
